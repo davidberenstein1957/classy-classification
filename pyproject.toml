@@ -1,13 +1,31 @@
 [tool.poetry]
-name = "classy-few-shot-classification"
+name = "classy-classification"
 version = "0.1.0"
-description = "This repository contains an easy and intuitive approach to few-shot text classification."
+description = "This repository contains an easy and intuitive approach to few-shot text classification using sentence-transformers and spacy embeddings."
 authors = ["David Berenstein <david.berenstein@pandoraintelligence.com>"]
 license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/davidberenstein1957/classy-classification"
+repository = "https://github.com/davidberenstein1957/classy-classification"
+documentation = "https://github.com/davidberenstein1957/classy-classification"
+keywords = ["spacy", "rasa", "few-shot classification", "nlu", "sentence-transformers"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development"
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-spacy = "^3.2.2"
+spacy = {extras = ["transformers"], version = "^3.2.2"}
 sentence-transformers = "^2.2.0"
 scikit-learn = "^1.0.2"
 

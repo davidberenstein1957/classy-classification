@@ -1,4 +1,6 @@
-from classy import Classy
+import spacy
+
+import classy_classification
 
 example_1 = {
     'positive': [
@@ -17,7 +19,7 @@ example_1 = {
     ]
 }
 
-classifier = Classy(data=example_1)
-classifier('This package is amazing!')
-print(classifier.pipe(['This package is the worst!']))
-
+nlp = spacy.load('en_core_web_trf')
+nlp.add_pipe('text_categorizer', config={'data': example_1, 'model': 'spacy'})
+print(nlp('This library truly sucks.')._.cats)
+print(list(nlp.pipe(['This library truly sucks.']))[0]._.cats)

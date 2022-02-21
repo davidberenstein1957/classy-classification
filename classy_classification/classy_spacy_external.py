@@ -7,14 +7,14 @@ from spacy.tokens import Doc
 from .classy_sentence_transformer import classySentenceTransformer
 
 
-class classySpacyInternal(classySentenceTransformer):
-    def __init__(self, *args, **kwargs):
+class classySpacyExternal(classySentenceTransformer):
+    def __init__(self, name,  *args, **kwargs):
         super().__init__(*args, **kwargs)
         Doc.set_extension("cats", default=None, force=True)
 
     def __call__(self, doc: Doc):
         pred_result = super(self.__class__, self).__call__(doc.text.replace("\n", " "))
-        doc._.cats = pred_result[0]
+        doc._.cats = pred_result
 
         return doc
 

@@ -1,8 +1,8 @@
 import spacy
 
-import .classy
+import classy_classification
 
-old_data = {
+example_1 = {
     'positive': [
         'This is amazing!',
         'What an awesome library.',
@@ -18,8 +18,8 @@ old_data = {
         'What a weird and shitty approach!'
     ]
 }
-nlp = spacy.blank('en')
-nlp.add_pipe('text_categorizer', config={'data': old_data})
-nlp('This library truly sucks.')
-nlp.pipe(['This library truly sucks.'])
 
+nlp = spacy.load('en_core_web_md') 
+nlp.add_pipe('text_categorizer', config={'data': example_1, 'model': 'spacy'})
+print(nlp('This library truly sucks.')._.cats)
+print(list(nlp.pipe(['This library truly sucks.']))[0]._.cats)

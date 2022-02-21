@@ -4,11 +4,13 @@ from spacy import util
 from spacy.language import Language
 from spacy.tokens import Doc
 
-from .classy_sentence_transformer import classySentenceTransformer as Classy
+from .classy_sentence_transformer import \
+    classySentenceTransformer as classyClassifier
+from .classy_spacy_external import classySpacyExternal
 from .classy_spacy_internal import classySpacyInternal
 
 __all__ = [
-    'classySentence'
+    'classyClassifier'
 ]
 
 @Language.factory(
@@ -30,10 +32,19 @@ def make_text_categorizer(
     model: str,
     config: dict,
 ):  
-    return classySpacyInternal(
-        name=name,
-        data=data,
-        model=model,
-        config=config
-    )
+    if model == 'spacy':
+        return classySpacyInternal(
+            nlp=nlp,
+            name=name,
+            data=data,
+            config=config
+        )
+    else:
+        return classySpacyExternal(
+            name=name,
+            data=data,
+            model=model,
+            config=config
+        )
+    
 

@@ -8,7 +8,6 @@ from sklearn.svm import SVC
 
 class classySkeleton(object):
     def __init__(self, 
-            name: str = 'text_categorizer',
             data: dict = None, 
             config: dict = {                              
                 "C": [1, 2, 5, 10, 20, 100],
@@ -16,7 +15,6 @@ class classySkeleton(object):
                 "max_cross_validation_folds": 5
             }
         ) -> None:
-        self.name = name
         self.data = data
         self.config = config 
         
@@ -39,7 +37,7 @@ class classySkeleton(object):
             
     def get_embeddings(self, text):
         raise Exception("Not implemented for Skeleton, wrap it using a parent class.")
-            
+          
     def set_svc(self, config: dict = None):
         if config: # update if overwritten
             self.config = config
@@ -59,6 +57,30 @@ class classySkeleton(object):
         )
         self.clf.fit(self.X, self.y)
         
+    def __call__(self, text: str):
+        embeddings = self.get_embeddings(text)
+        embeddings = embeddings.reshape(1, -1)
+                
+        return self.get_prediction(embeddings)[0]
+    
+    def pipe(self, text: List[str]):
+        embeddings = self.get_embeddings(text)
+        
+        return self.get_prediction(embeddings)
+    
+    def get_prediction(self, embeddings):
+        pred_result = self.clf.predict_proba(embeddings)
+        
+        return self.proba_to_dict(pred_result)
+    
+    def proba_to_dict(self, pred_results):
+        pred_dict = []
+        for pred in pred_results:
+            pred_dict.append(
+                {label: value for label, value in zip(self.le.classes_, pred)}
+            )
+            
+        return pred_dict
     
         
         
