@@ -1,5 +1,5 @@
 from classy_classification import classyClassifier
-from examples import training_data, validation_data
+from .data import training_data, validation_data
 
 classifier = classyClassifier(data=training_data)
 print(classifier(validation_data[0]))

@@ -4,13 +4,15 @@ from spacy import util
 from spacy.language import Language
 from spacy.tokens import Doc
 
-from .classy_sentence_transformer import \
+from .classifiers.sentence_transformer import \
     classySentenceTransformer as classyClassifier
-from .classy_spacy_external import classySpacyExternal
-from .classy_spacy_internal import classySpacyInternal
+from .classifiers.spacy_external import classySpacyExternal
+from .classifiers.spacy_internal import classySpacyInternal
 
 __all__ = [
-    'classyClassifier'
+    'classyClassifier',
+    'classySpacyExternal',
+    'classySpacyInternal'
 ]
 
 @Language.factory(

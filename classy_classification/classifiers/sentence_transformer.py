@@ -14,7 +14,6 @@ class classySentenceTransformer(classySkeleton):
                 "kernels": ["linear"],                              
                 "max_cross_validation_folds": 5
             },
-            name: str = 'text_categorizer'
         ):
         super().__init__(data=data, config=config)
         self.model = model
@@ -23,6 +22,11 @@ class classySentenceTransformer(classySkeleton):
         self.set_svc()
         
     def set_embedding_model(self, model: str = None):
+        """ set the embedding model based on a sentencetransformer model or path
+
+        Args:
+            model (str, optional): the model name. Defaults to self.model, if no model is provided.
+        """
         if model: # update if overwritten
             self.model = model
             
@@ -32,7 +36,15 @@ class classySentenceTransformer(classySkeleton):
             self.set_training_data()
             self.set_svc()  
             
-    def get_embeddings(self, X):
+    def get_embeddings(self, X: List[str]) -> List[List[float]]:
+        """retrieve embeddings from the SentenceTransformer model for a text or list of texts
+
+        Args:
+            X (List[str]): input texts
+
+        Returns:
+            List[List[float]]: output embeddings
+        """
         return self.embedding_model.encode(X)
     
     

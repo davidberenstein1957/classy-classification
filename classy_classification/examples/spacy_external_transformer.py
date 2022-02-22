@@ -1,7 +1,7 @@
 import spacy
 
 import classy_classification
-from examples import training_data, validation_data
+from .data import training_data, validation_data
 
 nlp = spacy.blank('en')
 nlp.add_pipe('text_categorizer', config={'data': training_data})
