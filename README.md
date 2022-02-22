@@ -91,7 +91,7 @@ nlp.pipe(validation_data)
 # Todo
 
 [ ] look into a way to integrate spacy trf models.
-
+[ ] multiple clasifications datasets for a single input e.g. emotions and topic.
 
 # Inspiration Drawn From
 - [Scikit-learn](https://github.com/scikit-learn/scikit-learn)
