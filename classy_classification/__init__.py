@@ -20,6 +20,7 @@ __all__ = [
     default_config={
         "data": None,
         "model": 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2',
+        "device": "cpu",
         "config": {                      
             "C": [1, 2, 5, 10, 20, 100],
             "kernels": ["linear"],                              
@@ -32,6 +33,7 @@ def make_text_categorizer(
     name: str,
     data: dict,
     model: str,
+    device: str,
     config: dict,
 ):  
     if model == 'spacy':
@@ -45,6 +47,7 @@ def make_text_categorizer(
         return classySpacyExternal(
             name=name,
             data=data,
+            device=device,
             model=model,
             config=config
         )
