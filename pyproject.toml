@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "classy-classification"
-version = "0.1.0"
-description = "This repository contains an easy and intuitive approach to few-shot text classification using sentence-transformers and spacy embeddings."
+version = "0.2.2"
+description = "This repository contains an easy and intuitive approach to few-shot text classification using sentence-transformers or spacy embeddings."
 authors = ["David Berenstein <david.berenstein@pandoraintelligence.com>"]
 license = "MIT"
 readme = "README.md"
@@ -24,7 +24,7 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = ">= 3.6, < 3.10"
+python = "^3.6"
 spacy = {extras = ["transformers"], version = "^3.2.2"}
 sentence-transformers = "^2.2.0"
 scikit-learn = "^1.0.2"

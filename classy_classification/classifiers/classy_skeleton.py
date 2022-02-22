@@ -19,7 +19,11 @@ class classySkeleton(object):
         """initialize a classy skeleton for classification using a SVC config and some input training data.
 
         Args:
-            data (dict,): _description_. Defaults to None.
+            data (dict): training data. example
+                {
+                    "class_1": ["example"],
+                    "class 2": ["example"]
+                }
             config (_type_, optional): a SVC config. 
                 Defaults to 
                 { 
