@@ -47,7 +47,7 @@ class classySkeleton(object):
         tuned_parameters = [{"C": C, "kernel": [str(k) for k in kernels]}]                                                                 
         folds = self.config["max_cross_validation_folds"]                       
         cv_splits = max(2, min(folds, np.min(np.bincount(self.y)) // 5))
-        self.clf = GridSearchCV( 
+        self.clf = GridSearchCV(
             SVC(C=1, probability=True, class_weight='balanced'),
             param_grid=tuned_parameters, 
             n_jobs=1, 

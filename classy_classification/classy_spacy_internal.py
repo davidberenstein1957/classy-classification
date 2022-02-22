@@ -25,7 +25,7 @@ class classySpacyInternal(classySkeleton):
         return embeddings
     
     def get_embeddings_from_doc(self, doc):
-        return doc.vector if doc.has_vector else doc._.trf_data.tensors[-1][0]
+        return doc.vector if doc.has_vector else Exception('s')
 
     def __call__(self, doc: Doc):
         embeddings = self.get_embeddings_from_doc(doc)
