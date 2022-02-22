@@ -23,7 +23,8 @@ class classySkeleton(object):
                 {
                     "class_1": ["example"],
                     "class 2": ["example"]
-                }
+                },
+            device (str): device "cuda"/"cpu",
             config (_type_, optional): a SVC config. 
                 Defaults to 
                 { 

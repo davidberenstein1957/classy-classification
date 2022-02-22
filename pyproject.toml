@@ -24,10 +24,10 @@ classifiers = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-spacy = {extras = ["transformers"], version = "^3.2.2"}
-sentence-transformers = "^2.2.0"
-scikit-learn = "^1.0.2"
+python = "^3.7"
+spacy = {extras = ["transformers"], version = "^3.0"}
+sentence-transformers = "^2.0"
+scikit-learn = "^1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"

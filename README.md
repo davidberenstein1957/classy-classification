@@ -6,8 +6,38 @@ This repository contains an easy and intuitive approach to few-shot text classif
 
 # Install
 ``` pip install classy-classification```
+
 # Quickstart
-Take a look at the examples directory. 
+Take a look at the examples directory. Use data from any language. And choose a model from  [sentence-transformers](https://www.sbert.net/docs/pretrained_models.html).
+
+```
+from classy_classification import classyClassifier
+
+data = {
+    "furniture": ["This text is about chairs.",
+               "Couches, benches and televisions.",
+               "I really need to get a new sofa."],
+    "kitchen": ["There also exist things like fridges.",
+                "I hope to be getting a new stove today.",
+                "Do you also have some ovens."]
+}
+
+classifier = classyClassifier(data)
+classifier("I am looking for kitchen appliances.")
+```
+
+# Credits
+## Inspiration Drawn From
+- [Scikit-learn](https://github.com/scikit-learn/scikit-learn)
+- [Rasa NLU](https://github.com/RasaHQ/rasa) 
+- [Sentence Transformers](https://github.com/UKPLab/sentence-transformers)
+- [Spacy](https://github.com/explosion/spaCy)
+
+## Or buy me a coffee
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/98kf2552674)
+
+
+# More examples
 ## Some quick and dirty training data.
 ``` 
 training_data = {
@@ -15,7 +45,7 @@ training_data = {
         "Putin orders troops into pro-Russian regions of eastern Ukraine.",
         "The president decided not to go through with his speech.",
         "There is much uncertainty surrounding the coming elections.",
-        "Democrats are engaged in a ‘new politics of evasion’"
+        "Democrats are engaged in a ‘new politics of evasion’."
     ],
     "sports": [
         "The soccer team lost.",
@@ -92,9 +122,3 @@ nlp.pipe(validation_data)
 
 [ ] look into a way to integrate spacy trf models.
 [ ] multiple clasifications datasets for a single input e.g. emotions and topic.
-
-# Inspiration Drawn From
-- [Scikit-learn](https://github.com/scikit-learn/scikit-learn)
-- [Rasa NLU](https://github.com/RasaHQ/rasa) 
-- [Sentence Transformers](https://github.com/UKPLab/sentence-transformers)
-- [Spacy](https://github.com/explosion/spaCy)

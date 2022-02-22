@@ -9,6 +9,7 @@ class classySentenceTransformer(classySkeleton):
     def __init__(self, 
             data: dict, 
             model: str = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2', 
+            device: str = 'cpu',
             config: dict={                              
                 "C": [1, 2, 5, 10, 20, 100],
                 "kernels": ["linear"],                              
@@ -21,7 +22,7 @@ class classySentenceTransformer(classySkeleton):
         self.set_training_data()
         self.set_svc()
         
-    def set_embedding_model(self, model: str = None):
+    def set_embedding_model(self, model: str = None, device: str = 'cpu'):
         """ set the embedding model based on a sentencetransformer model or path
 
         Args:
@@ -29,8 +30,10 @@ class classySentenceTransformer(classySkeleton):
         """
         if model: # update if overwritten
             self.model = model
+        if device:
+            self.device = device
             
-        self.embedding_model = SentenceTransformer(self.model)
+        self.embedding_model = SentenceTransformer(self.model, device=self.device)
         
         if model: # update if overwritten
             self.set_training_data()
