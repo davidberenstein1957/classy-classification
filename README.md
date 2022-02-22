@@ -22,8 +22,17 @@ data = {
                 "Do you also have some ovens."]
 }
 
+
 classifier = classyClassifier(data)
 classifier("I am looking for kitchen appliances.")
+classifier.pipe(["I am looking for kitchen appliances."])
+
+import spacy
+
+nlp = spacy.blank("en")
+nlp.add_pipe("text_categorizer", config={"data": data}) # provide similar config as above
+nlp("I am looking for kitchen appliances.")._.cats
+nlp.pipe(["I am looking for kitchen appliances."])
 ```
 
 # Credits
