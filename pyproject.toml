@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "classy-classification"
-version = "0.2.3"
-description = "This repository contains an easy and intuitive approach to few-shot text classification using sentence-transformers or spacy embeddings."
+version = "0.3"
+description = "This repository contains an easy and intuitive approach to zero and few-shot text classification using sentence-transformers, huggingface or word embeddings within a Spacy pipeline."
 authors = ["David Berenstein <david.berenstein@pandoraintelligence.com>"]
 license = "MIT"
 readme = "README.md"

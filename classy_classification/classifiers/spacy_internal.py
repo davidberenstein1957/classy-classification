@@ -1,11 +1,7 @@
-import os
 from typing import List
 
-import numpy as np
 from spacy import util
-from spacy.language import Language
 from spacy.tokens import Doc
-from torch import embedding
 
 from .classy_skeleton import classySkeleton
 

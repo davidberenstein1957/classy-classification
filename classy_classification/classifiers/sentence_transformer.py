@@ -18,6 +18,7 @@ class classySentenceTransformer(classySkeleton):
         ):
         super().__init__(data=data, config=config)
         self.model = model
+        self.device = device
         self.set_embedding_model()
         self.set_training_data()
         self.set_svc()
