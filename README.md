@@ -31,8 +31,10 @@ import spacy
 
 nlp = spacy.blank("en")
 
-nlp.add_pipe("text_categorizer", config={"data": data}) # from sentence-transformers
-nlp.add_pipe("text_categorizer", config={"data": data, "cat_type": "zero"}) # from huggingface zero-shot
+nlp.add_pipe("text_categorizer", config={"data": data, "model": "spacy"}) # using spacy internal embeddings
+nlp.add_pipe("text_categorizer", config={"data": data}) # using sentence-transformers
+nlp.add_pipe("text_categorizer", config={"data": list(data.keys()), "cat_type": "zero"}) # using huggingface zero-shot
+
 
 nlp("I am looking for kitchen appliances.")._.cats
 nlp.pipe(["I am looking for kitchen appliances."])
