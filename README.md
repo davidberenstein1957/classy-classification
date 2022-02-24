@@ -11,8 +11,6 @@ This repository contains an easy and intuitive approach to zero and few-shot tex
 Take a look at the examples directory. Use data from any language. And choose a model from  [sentence-transformers](https://www.sbert.net/docs/pretrained_models.html) or from [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification).
 
 ```
-from classy_classification import classyClassifier
-
 data = {
     "furniture": ["This text is about chairs.",
                "Couches, benches and televisions.",
@@ -22,12 +20,8 @@ data = {
                 "Do you also have some ovens."]
 }
 
-
-classifier = classyClassifier(data)
-classifier("I am looking for kitchen appliances.")
-classifier.pipe(["I am looking for kitchen appliances."])
-
 import spacy
+import classy_classification
 
 nlp = spacy.blank("en")
 
@@ -84,8 +78,19 @@ validation_data = [
 ]
 ```
 
+## internal spacy word2vec embeddings
+```
+import spacy
+import classy_classification
 
-## using an individual sentence-transformer
+nlp = spacy.load("en_core_web_md") 
+nlp.add_pipe("text_categorizer", config={"data": training_data, "model": "spacy"}) #use internal embeddings from spacy model
+nlp(validation_data[0])._.cats
+nlp.pipe(validation_data)
+```
+
+
+## using as an individual sentence-transformer
 ```
 from classy_classification import classyClassifier
 
@@ -112,7 +117,6 @@ classifier.set_svc(
 ## external sentence-transformer within spacy pipeline for few-shot
 ```
 import spacy
-
 import classy_classification
 
 nlp = spacy.blank("en")
@@ -124,22 +128,10 @@ nlp.pipe(validation_data)
 ## external hugginface model within spacy pipeline for zero-shot
 ```
 import spacy
-
 import classy_classification
 
 nlp = spacy.blank("en")
 nlp.add_pipe("text_categorizer", config={"data": training_data, "cat_type": "zero"}) #
-nlp(validation_data[0])._.cats
-nlp.pipe(validation_data)
-```
-## internal spacy word2vec embeddings
-```
-import spacy
-
-import classy_classification
-
-nlp = spacy.load("en_core_web_md") 
-nlp.add_pipe("text_categorizer", config={"data": training_data, "model": "spacy"}) #use internal embeddings from spacy model
 nlp(validation_data[0])._.cats
 nlp.pipe(validation_data)
 ```
