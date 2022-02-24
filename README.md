@@ -25,10 +25,20 @@ import classy_classification
 
 nlp = spacy.blank("en")
 
-nlp.add_pipe("text_categorizer", config={"data": data, "model": "spacy"}) # using spacy internal embeddings
-nlp.add_pipe("text_categorizer", config={"data": data}) # using sentence-transformers
-nlp.add_pipe("text_categorizer", config={"data": list(data.keys()), "cat_type": "zero"}) # using huggingface zero-shot
+# using spacy internal embeddings via md or lg model
+nlp.add_pipe("text_categorizer", 
+    config={"data": data, "model": "spacy"}
+) 
 
+# using sentence-transformers
+nlp.add_pipe("text_categorizer", 
+    config={"data": data, "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"}
+) 
+
+# using huggingface zero-shot
+nlp.add_pipe("text_categorizer", 
+    config={"data": list(data.keys()), "cat_type": "zero", "model": "facebook/bart-large-mnli"}
+)
 
 nlp("I am looking for kitchen appliances.")._.cats
 nlp.pipe(["I am looking for kitchen appliances."])
