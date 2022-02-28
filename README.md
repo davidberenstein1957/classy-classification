@@ -10,7 +10,10 @@ This repository contains an easy and intuitive approach to zero and few-shot tex
 # Quickstart
 Take a look at the examples directory. Use data from any language. And choose a model from  [sentence-transformers](https://www.sbert.net/docs/pretrained_models.html) or from [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification).
 
-```
+```import spacy
+import classy_classification
+
+
 data = {
     "furniture": ["This text is about chairs.",
                "Couches, benches and televisions.",
@@ -20,28 +23,24 @@ data = {
                 "Do you also have some ovens."]
 }
 
-import spacy
-import classy_classification
-
 nlp = spacy.blank("en")
 
-# using spacy internal embeddings via md or lg model
-nlp.add_pipe("text_categorizer", 
-    config={"data": data, "model": "spacy"}
-) 
+classification_type = "spacy_few_shot"
+if classification_type == "spacy_few_shot":
+    nlp.add_pipe("text_categorizer", 
+        config={"data": data, "model": "spacy"}
+    ) 
+elif classification_type == "sentence_transformer_few_shot":
+    nlp.add_pipe("text_categorizer", 
+        config={"data": data, "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"}
+    ) 
+elif classification_type == "huggingface_zero_shot":
+    nlp.add_pipe("text_categorizer", 
+        config={"data": list(data.keys()), "cat_type": "zero", "model": "facebook/bart-large-mnli"}
+    )
 
-# using sentence-transformers
-nlp.add_pipe("text_categorizer", 
-    config={"data": data, "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"}
-) 
-
-# using huggingface zero-shot
-nlp.add_pipe("text_categorizer", 
-    config={"data": list(data.keys()), "cat_type": "zero", "model": "facebook/bart-large-mnli"}
-)
-
-nlp("I am looking for kitchen appliances.")._.cats
-nlp.pipe(["I am looking for kitchen appliances."])
+print(nlp(\"I am looking for kitchen appliances.\")._.cats)
+print([doc._.cats for doc in nlp.pipe([\"I am looking for kitchen appliances.\"])])
 ```
 
 # Credits
@@ -95,8 +94,8 @@ import classy_classification
 
 nlp = spacy.load("en_core_web_md") 
 nlp.add_pipe("text_categorizer", config={"data": training_data, "model": "spacy"}) #use internal embeddings from spacy model
-nlp(validation_data[0])._.cats
-nlp.pipe(validation_data)
+print(nlp(validation_data[0])._.cats)
+print([doc._.cats for doc in nlp.pipe(validation_data)])
 ```
 
 
@@ -131,8 +130,8 @@ import classy_classification
 
 nlp = spacy.blank("en")
 nlp.add_pipe("text_categorizer", config={"data": training_data}) #
-nlp(validation_data[0])._.cats
-nlp.pipe(validation_data)
+print(nlp(validation_data[0])._.cats)
+print([doc._.cats for doc in nlp.pipe(validation_data)])
 ```
 
 ## external hugginface model within spacy pipeline for zero-shot
@@ -142,8 +141,8 @@ import classy_classification
 
 nlp = spacy.blank("en")
 nlp.add_pipe("text_categorizer", config={"data": training_data, "cat_type": "zero"}) #
-nlp(validation_data[0])._.cats
-nlp.pipe(validation_data)
+print(nlp(validation_data[0])._.cats)
+print([doc._.cats for doc in nlp.pipe(validation_data)])
 ```
 
 # Todo
