@@ -40,7 +40,7 @@ elif classification_type == "huggingface_zero_shot":
         config={"data": ["furniture", "kitchen"], "cat_type": "zero", "model": "facebook/bart-large-mnli"}
     )
 
-print(nlp(\"I am looking for kitchen appliances.\")._.cats)
+print(nlp("I am looking for kitchen appliances.")._.cats)
 # Output:
 #
 # [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
