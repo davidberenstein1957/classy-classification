@@ -1,14 +1,12 @@
 # Classy Classification
 Have you every struggled with needing a [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) but didn't have the time to train one from scratch? Classy Classification is the way to go! For few-shot classification using [sentence-transformers](https://github.com/UKPLab/sentence-transformers) or [spaCy models](https://spacy.io/usage/models), provide a dictionary with labels and examples, or just provide a list of labels for zero shot-classification with [Hugginface zero-shot classifiers](https://huggingface.co/models?pipeline_tag=zero-shot-classification). 
-
 # Install
 ``` pip install classy-classification```
-
 # Quickstart
-
-```import spacy
+## spacy embeddings
+```
+import spacy
 import classy_classification
-
 
 data = {
     "furniture": ["This text is about chairs.",
@@ -19,33 +17,72 @@ data = {
                 "Do you also have some ovens."]
 }
 
-classification_type = "spacy_few_shot"
-
-# use internal spacy embeddings with a few examples per label
-if classification_type == "spacy_few_shot":
-    nlp = spacy.load("en_core_web_md")
-    nlp.add_pipe("text_categorizer", 
-        config={"data": data, "model": "spacy"}
-    ) 
-# use sentence-transformer embeddings with a few examples per label
-elif classification_type == "sentence_transformer_few_shot":
-    nlp = spacy.blank("en")
-    nlp.add_pipe("text_categorizer", 
-        config={"data": data, "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"}
-    ) 
-# use zero-shot classification with only a few labels
-elif classification_type == "huggingface_zero_shot":
-    nlp = spacy.blank("en")
-    nlp.add_pipe("text_categorizer", 
-        config={"data": ["furniture", "kitchen"], "cat_type": "zero", "model": "facebook/bart-large-mnli"}
-    )
+nlp = spacy.load("en_core_web_md")
+nlp.add_pipe(
+    "text_categorizer", 
+    config={
+        "data": data, 
+        "model": "spacy"
+    }
+) 
 
 print(nlp("I am looking for kitchen appliances.")._.cats)
+
 # Output:
 #
 # [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
 ```
+## Sentence-transfomer embeddings
+```
+import spacy
+import classy_classification
 
+data = {
+    "furniture": ["This text is about chairs.",
+               "Couches, benches and televisions.",
+               "I really need to get a new sofa."],
+    "kitchen": ["There also exist things like fridges.",
+                "I hope to be getting a new stove today.",
+                "Do you also have some ovens."]
+}
+
+nlp = spacy.blank("en")
+nlp.add_pipe(
+    "text_categorizer", 
+    config={
+        "data": data, 
+        "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+    }
+) 
+
+print(nlp("I am looking for kitchen appliances.")._.cats)
+
+# Output:
+#
+# [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
+```
+## Hugginface zero-shot classifiers
+```
+import spacy
+import classy_classification
+
+data = ["furniture", "kitchen"]
+
+nlp = spacy.blank("en")
+nlp.add_pipe(
+    "text_categorizer", 
+    config={
+        "data": data, 
+        "model": "facebook/bart-large-mnli"
+    }
+) 
+
+print(nlp("I am looking for kitchen appliances.")._.cats)
+
+# Output:
+#
+# [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
+```
 # Credits
 ## Inspiration Drawn From
 [Huggingface](https://huggingface.co/) does offer some nice models for few/zero-shot classification, but these are not tailored to multi-lingual approaches. Rasa NLU has [a nice approach](https://rasa.com/blog/rasa-nlu-in-depth-part-1-intent-classification/) for this, but its too embedded in their codebase for easy usage outside of Rasa/chatbots. Additionally, it made sense to integrate [sentence-transformers](https://github.com/UKPLab/sentence-transformers) and [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification), instead of default [word embeddings](https://arxiv.org/abs/1301.3781). Finally, I decided to integrate with Spacy, since training a custom [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) seems like a lot of hassle if you want something quick and dirty. 
