@@ -23,7 +23,7 @@ classification_type = "spacy_few_shot"
 
 # use internal spacy embeddings with a few examples per label
 if classification_type == "spacy_few_shot":
-    nlp = spacy.blank("en")
+    nlp = spacy.load("en_core_web_md")
     nlp.add_pipe("text_categorizer", 
         config={"data": data, "model": "spacy"}
     ) 
