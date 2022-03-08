@@ -1,14 +1,10 @@
-# Classy few shot classification
-This repository contains an easy and intuitive approach to zero and few-shot text classification using sentence-transformers, huggingface or word embeddings within a Spacy pipeline.
- 
-# Why?
-[Huggingface](https://huggingface.co/) does offer some nice models for few/zero-shot classification, but these are not tailored to multi-lingual approaches. Rasa NLU has [a nice approach](https://rasa.com/blog/rasa-nlu-in-depth-part-1-intent-classification/) for this, but its too embedded in their codebase for easy usage outside of Rasa/chatbots. Additionally, it made sense to integrate [sentence-transformers](https://github.com/UKPLab/sentence-transformers) and [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification), instead of default [word embeddings](https://arxiv.org/abs/1301.3781). Finally, I decided to integrate with Spacy, since training a custom [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) seems like a lot of hassle if you want something quick and dirty. 
+# Classy Classification
+Have you every struggled with needing a [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) but didn't have the time to train one from scratch? Classy Classification is the way to go! For few-shot classification using [sentence-transformers](https://github.com/UKPLab/sentence-transformers) or [spaCy models](https://spacy.io/usage/models), provide a dictionary with labels and examples, or just provide a list of labels for zero shot-classification with [Hugginface zero-shot classifiers](https://huggingface.co/models?pipeline_tag=zero-shot-classification). 
 
 # Install
 ``` pip install classy-classification```
 
 # Quickstart
-Take a look at the examples directory. Use data from any language. And choose a model from  [sentence-transformers](https://www.sbert.net/docs/pretrained_models.html) or from [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification).
 
 ```import spacy
 import classy_classification
@@ -23,28 +19,37 @@ data = {
                 "Do you also have some ovens."]
 }
 
-nlp = spacy.blank("en")
-
 classification_type = "spacy_few_shot"
+
+# use internal spacy embeddings with a few examples per label
 if classification_type == "spacy_few_shot":
+    nlp = spacy.blank("en")
     nlp.add_pipe("text_categorizer", 
         config={"data": data, "model": "spacy"}
     ) 
+# use sentence-transformer embeddings with a few examples per label
 elif classification_type == "sentence_transformer_few_shot":
+    nlp = spacy.blank("en")
     nlp.add_pipe("text_categorizer", 
         config={"data": data, "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"}
     ) 
+# use zero-shot classification with only a few labels
 elif classification_type == "huggingface_zero_shot":
+    nlp = spacy.blank("en")
     nlp.add_pipe("text_categorizer", 
-        config={"data": list(data.keys()), "cat_type": "zero", "model": "facebook/bart-large-mnli"}
+        config={"data": ["furniture", "kitchen"], "cat_type": "zero", "model": "facebook/bart-large-mnli"}
     )
 
 print(nlp(\"I am looking for kitchen appliances.\")._.cats)
-print([doc._.cats for doc in nlp.pipe([\"I am looking for kitchen appliances.\"])])
+# Output:
+#
+# [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
 ```
 
 # Credits
 ## Inspiration Drawn From
+[Huggingface](https://huggingface.co/) does offer some nice models for few/zero-shot classification, but these are not tailored to multi-lingual approaches. Rasa NLU has [a nice approach](https://rasa.com/blog/rasa-nlu-in-depth-part-1-intent-classification/) for this, but its too embedded in their codebase for easy usage outside of Rasa/chatbots. Additionally, it made sense to integrate [sentence-transformers](https://github.com/UKPLab/sentence-transformers) and [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification), instead of default [word embeddings](https://arxiv.org/abs/1301.3781). Finally, I decided to integrate with Spacy, since training a custom [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) seems like a lot of hassle if you want something quick and dirty. 
+
 - [Scikit-learn](https://github.com/scikit-learn/scikit-learn)
 - [Rasa NLU](https://github.com/RasaHQ/rasa) 
 - [Sentence Transformers](https://github.com/UKPLab/sentence-transformers)
@@ -148,4 +153,5 @@ print([doc._.cats for doc in nlp.pipe(validation_data)])
 # Todo
 
 [ ] look into a way to integrate spacy trf models.
+
 [ ] multiple clasifications datasets for a single input e.g. emotions and topic.
