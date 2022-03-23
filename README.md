@@ -51,7 +51,8 @@ nlp.add_pipe(
     "text_categorizer", 
     config={
         "data": data, 
-        "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
+        "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "device": "gpu"
     }
 ) 
 
@@ -74,7 +75,8 @@ nlp.add_pipe(
     config={
         "data": data, 
         "model": "facebook/bart-large-mnli",
-        "cat_type": "zero"
+        "cat_type": "zero",
+        "device": "gpu"
     }
 ) 
 
