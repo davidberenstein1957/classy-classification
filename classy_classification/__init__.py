@@ -1,11 +1,10 @@
-import os
 from typing import Union
 
-from spacy import util
 from spacy.language import Language
-from spacy.tokens import Doc
 
-from .classifiers.sentence_transformer import classySentenceTransformer as classyClassifier
+from .classifiers.sentence_transformer import (
+    classySentenceTransformer as classyClassifier,
+)
 from .classifiers.spacy_few_shot_external import classySpacyFewShotExternal
 from .classifiers.spacy_internal import classySpacyInternal
 from .classifiers.spacy_zero_shot_external import classySpacyZeroShotExternal
@@ -31,7 +30,7 @@ def make_text_categorizer(
     data: Union[dict, list],
     device: str,
     config: dict,
-    model: str = None,
+    model: str = "",
     cat_type: str = "few",
     include_doc: bool = True,
     include_sent: bool = False,

@@ -1,5 +1,6 @@
-import classy_classification
 import spacy
+
+import classy_classification  # noqa: F401
 
 from .data import training_data, validation_data
 
