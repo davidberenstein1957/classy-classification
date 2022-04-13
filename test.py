@@ -1,9 +1,1 @@
-import spacy
-
-import classy_classification
-from classy_classification.examples.data import training_data, validation_data
-
-nlp = spacy.blank("en")
-nlp.add_pipe("text_categorizer", config={"data": list(training_data.keys()), "cat_type": "zero", "include_sent": True})
-print([sent._.cats for sent in nlp(validation_data[0]).sents])
-print([doc._.cats for doc in nlp.pipe(validation_data)])
+import this
