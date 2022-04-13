@@ -30,7 +30,7 @@ def make_text_categorizer(
     data: Union[dict, list],
     device: str,
     config: dict,
-    model: str = "",
+    model: str = None,
     cat_type: str = "few",
     include_doc: bool = True,
     include_sent: bool = False,
