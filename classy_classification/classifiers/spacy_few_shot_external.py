@@ -59,6 +59,14 @@ class classySpacyFewShotExternal(classySentenceTransformer):
                 yield doc
 
     def set_pred_results_for_doc(self, doc: Doc):
+        """
+        It takes a spaCy Doc object, runs the text of each sentence through the model, and then adds the results to the Doc
+        object
+
+        :param doc: Doc
+        :type doc: Doc
+        :return: A list of dictionaries.
+        """
         pred_results = super(self.__class__, self).pipe([sent.text for sent in list(doc.sents)])
         for sent, pred in zip(doc.sents, pred_results):
             sent._.cats = pred
