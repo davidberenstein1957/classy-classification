@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 from sentence_transformers import SentenceTransformer
 
@@ -11,7 +11,7 @@ class classySentenceTransformer(classySkeleton):
         data: dict,
         model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         device: str = "cpu",
-        config: dict = {"C": [1, 2, 5, 10, 20, 100], "kernels": ["linear"], "max_cross_validation_folds": 5},
+        config: Union[dict, None] = None,
     ):
         super().__init__(data=data, config=config)
         self.model = model

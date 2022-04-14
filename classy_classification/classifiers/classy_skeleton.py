@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Union
 
 import numpy as np
 from sklearn import preprocessing
@@ -10,7 +10,7 @@ class classySkeleton(object):
     def __init__(
         self,
         data: dict,
-        config: dict = {"C": [1, 2, 5, 10, 20, 100], "kernels": ["linear"], "max_cross_validation_folds": 5},
+        config: Union[dict, None] = None,
     ) -> None:
         """initialize a classy skeleton for classification using a SVC config and some input training data.
 
@@ -22,15 +22,18 @@ class classySkeleton(object):
                 },
             device (str): device "cuda"/"cpu",
             config (_type_, optional): a SVC config.
-                Defaults to
+                example
                 {
                     "C": [1, 2, 5, 10, 20, 100],
                     "kernels": ["linear"],
                     "max_cross_validation_folds": 5
                 }.
         """
+        if config:
+            self.config = config
+        else:
+            self.config = {"C": [1, 2, 5, 10, 20, 100], "kernels": ["linear"], "max_cross_validation_folds": 5}
         self.data = data
-        self.config = config
 
     def __call__(self, text: str) -> dict:
         """predict the class for an input text
