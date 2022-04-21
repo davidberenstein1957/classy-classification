@@ -68,7 +68,7 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 #
 # [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
 ```
-## Hugginface zero-shot classifiers
+## Huggingface zero-shot classifiers
 ```
 import spacy
 import classy_classification
