@@ -139,6 +139,6 @@ class classySkeleton(object):
             n_jobs=1,
             cv=cv_splits,
             scoring="f1_weighted",
-            verbose=1,
+            verbose=0,
         )
         self.clf.fit(self.X, self.y)
