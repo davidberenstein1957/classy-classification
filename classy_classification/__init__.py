@@ -59,7 +59,6 @@ def make_text_categorizer(
                     name=name,
                     data=data,
                     device=device,
-                    model=model,
                     include_doc=include_doc,
                     include_sent=include_sent,
                 )
