@@ -131,3 +131,6 @@ dmypy.json
 # Downloaded models
 *.model
 *.model.*
+
+# OS
+**/*.DS_Store

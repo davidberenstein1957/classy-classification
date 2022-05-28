@@ -1,9 +1,9 @@
 from typing import List
 
 import numpy as np
+from sklearn.neural_network import MLPClassifier
 from spacy import util
 from spacy.tokens import Doc, Span
-from sklearn.neural_network import MLPClassifier
 
 from .classy_skeleton import classySkeleton
 
@@ -98,8 +98,8 @@ class classySpacyInternal(classySkeleton):
                 if self.include_sent:
                     doc = self.set_pred_results_for_doc(doc)
 
-                yield doc    
-    
+                yield doc
+
     def set_pred_results_for_doc(self, doc: Doc):
         embeddings = [sent.as_doc().vector for sent in list(doc.sents)]
         pred_results = self.get_prediction(embeddings)
@@ -107,7 +107,7 @@ class classySpacyInternal(classySkeleton):
             sent._.cats = pred
         return doc
 
-    
+
 class classySpacyInternalMultiLabel(classySkeleton):
     def __init__(self, nlp, name, data, config, include_doc, include_sent):
         super().__init__(data=data, config=config)
@@ -123,7 +123,7 @@ class classySpacyInternalMultiLabel(classySkeleton):
         self.nlp = nlp
         self.set_training_data()
         self.set_mlp()
-        
+
     def get_embeddings(self, text: List[str]) -> List[float]:
         """Retrieve embeddings from text.
         Overwrites function from the classySkeleton that is used to get embeddings for training data.
@@ -198,23 +198,22 @@ class classySpacyInternalMultiLabel(classySkeleton):
                 if self.include_sent:
                     doc = self.set_pred_results_for_doc(doc)
 
-                yield doc    
-    
-    def set_pred_results_for_doc(self, doc: Doc):
-        embeddings = [sent.as_doc().vector for sent in list(doc.sents)]
-        pred_results = self.get_prediction(embeddings)
-        for sent, pred in zip(doc.sents, pred_results):
-            sent._.cats = pred
-        return doc
-        
-                    
+                yield doc
+
     def proba_to_dict(self, pred_results: List[List]) -> List[dict]:
         pred_dict = []
         for pred in pred_results:
             pred_dict.append({label: value for label, value in zip(self.data.keys(), pred)})
 
         return pred_dict
-        
+
+    def set_pred_results_for_doc(self, doc: Doc):
+        embeddings = [sent.as_doc().vector for sent in list(doc.sents)]
+        pred_results = self.get_prediction(embeddings)
+        for sent, pred in zip(doc.sents, pred_results):
+            sent._.cats = pred
+        return doc
+
     def set_training_data(self, data: dict = None):
         if data:  # update if overwritten
             self.data = data
@@ -222,21 +221,20 @@ class classySpacyInternalMultiLabel(classySkeleton):
         if data:  # update if overwritten
             self.set_mlp()
 
-        X = np.unique([sample  for values in self.data.values() for sample in values])
+        X = np.unique([sample for values in self.data.values() for sample in values])
         self.X = self.get_embeddings(X.tolist())
         self.y = [[1 if sample in values else 0 for values in self.data.values()] for sample in X]
-    
+
     def set_mlp(self, config: dict = None):
         """Set and fit the Multi-layer Perceptron (MLP) classifier.
 
         Args:
-            config (dict, optional): A config containing keys for MLPClassifier, hidden_layer_sizes, activation.
-                Defaults to None if self.config needs to be used.
+            config (dict, optional): A config for MLPClassifier: hidden_layer_sizes, seed.
         """
         if config:  # update if overwritten
             self.config = config
 
         hidden_layer_sizes = self.config["hidden_layer_sizes"]
-        activation = self.config["activation"]
-        self.clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, activation=activation)
+        seed = self.config["seed"]
+        self.clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, random_state=seed)
         self.clf.fit(self.X, self.y)
