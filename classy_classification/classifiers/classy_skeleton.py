@@ -22,7 +22,7 @@ class classySkeleton(object):
                 },
             device (str): device "cuda"/"cpu",
             config (_type_, optional): a SVC config.
-                Defaults to
+                example
                 {
                     "C": [1, 2, 5, 10, 20, 100],
                     "kernels": ["linear"],
@@ -139,6 +139,6 @@ class classySkeleton(object):
             n_jobs=1,
             cv=cv_splits,
             scoring="f1_weighted",
-            verbose=1,
+            verbose=0,
         )
         self.clf.fit(self.X, self.y)
