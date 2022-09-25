@@ -1,6 +1,7 @@
+from fast_sentence_transformers.txtai import HFOnnx
+from fast_sentence_transformers.txtai.text import Labels
 from spacy import Language, util
 from spacy.tokens import Doc, Span
-from txtai.pipeline import HFOnnx, Labels
 
 
 class classySpacyZeroShotExternal(object):

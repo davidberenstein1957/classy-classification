@@ -1,9 +1,9 @@
 from typing import List, Union
 
 import onnxruntime
+from fast_sentence_transformers.txtai import HFOnnx
 from onnxruntime import InferenceSession, SessionOptions
 from transformers import AutoTokenizer
-from txtai.pipeline import HFOnnx
 
 from .classy_skeleton import classySkeleton
 
