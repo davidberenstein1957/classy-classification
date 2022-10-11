@@ -9,7 +9,7 @@ from .classifiers.spacy_few_shot_external import classySpacyFewShotExternal
 from .classifiers.spacy_internal import classySpacyInternal, classySpacyInternalMultiLabel
 from .classifiers.spacy_zero_shot_external import classySpacyZeroShotExternal
 
-_all__ = ["classyClassifier", "classySpacyFewShotExternal", "classySpacyZeroShotExternal", "classySpacyInternal"]
+__all__ = ["classyClassifier", "classySpacyFewShotExternal", "classySpacyZeroShotExternal", "classySpacyInternal"]
 
 
 @Language.factory(
