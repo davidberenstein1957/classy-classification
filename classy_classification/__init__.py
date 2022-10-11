@@ -9,12 +9,7 @@ from .classifiers.spacy_few_shot_external import classySpacyFewShotExternal
 from .classifiers.spacy_internal import classySpacyInternal, classySpacyInternalMultiLabel
 from .classifiers.spacy_zero_shot_external import classySpacyZeroShotExternal
 
-__all__ = [
-    "classyClassifier",
-    "classySpacyFewShotExternal",
-    "classySpacyZeroShotExternal",
-    "classySpacyInternal",
-]
+_all__ = ["classyClassifier", "classySpacyFewShotExternal", "classySpacyZeroShotExternal", "classySpacyInternal"]
 
 
 @Language.factory(
@@ -23,11 +18,7 @@ __all__ = [
         "data": None,
         "model": None,
         "device": "cpu",
-        "config": {
-            "C": [1, 2, 5, 10, 20, 100],
-            "kernels": ["linear"],
-            "max_cross_validation_folds": 5,
-        },
+        "config": {"C": [1, 2, 5, 10, 20, 100], "kernels": ["linear"], "max_cross_validation_folds": 5},
         "cat_type": "few",
         "include_doc": True,
         "include_sent": False,
@@ -46,9 +37,7 @@ def make_text_categorizer(
 ):
     if model == "spacy":
         if cat_type == "zero":
-            raise NotImplementedError(
-                "cannot use spacy internal embeddings with zero-shot classification"
-            )
+            raise NotImplementedError("cannot use spacy internal embeddings with zero-shot classification")
         elif cat_type == "multi-label":
             return classySpacyInternalMultiLabel(
                 nlp=nlp,
