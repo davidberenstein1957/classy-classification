@@ -39,7 +39,7 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 # [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
 ```
 ### Multi-label classification
-Sometimes multiple labels are neccesary to fully describe the contents of a text. In that case we want to make use of the **multi-label** implementation, here the sum of label scores is not limited to 1. Note that we use a multi-layer perceptron for this purpose instead of the default `SVC` implementation, requiring a little more training samples.  
+Sometimes multiple labels are necessary to fully describe the contents of a text. In that case, we want to make use of the **multi-label** implementation, here the sum of label scores is not limited to 1. Note that we use a multi-layer perceptron for this purpose instead of the default `SVC` implementation, requiring a few more training samples.
 
 ```python
 import spacy
@@ -58,14 +58,14 @@ data = {
 
 nlp = spacy.load("en_core_web_md")
 nlp.add_pipe(
-    "text_categorizer", 
+    "text_categorizer",
     config={
-        "data": data, 
+        "data": data,
         "model": "spacy",
         "cat_type": "multi-label",
         "config": {"hidden_layer_sizes": (64,), "seed": 42}
     }
-) 
+)
 
 print(nlp("texts about dinner tables have multiple labels.")._.cats)
 
@@ -168,7 +168,7 @@ classifier.set_embedding_model(model="paraphrase-MiniLM-L3-v2")
 classifier("I am looking for kitchen appliances.")
 
 # overwrite SVC config
-classifier.set_svc(
+classifier.set_classification_model(
     config={
         "C": [1, 2, 5, 10, 20, 100],
         "kernels": ["linear"],
@@ -202,5 +202,3 @@ classifier("I am looking for kitchen appliances.")
 # Todo
 
 [ ] look into a way to integrate spacy trf models.
-
-[ ] multiple clasifications datasets for a single input e.g. emotions and topic.

@@ -5,11 +5,24 @@ from spacy.language import Language
 from .classifiers.sentence_transformer import (
     classySentenceTransformer as classyClassifier,
 )
-from .classifiers.spacy_few_shot_external import classySpacyFewShotExternal
-from .classifiers.spacy_internal import classySpacyInternal, classySpacyInternalMultiLabel
-from .classifiers.spacy_zero_shot_external import classySpacyZeroShotExternal
+from .classifiers.spacy_external import (
+    classySpacyExternalFewShot,
+    classySpacyExternalFewShotMultiLabel,
+    classySpacyExternalZeroShot,
+)
+from .classifiers.spacy_internal import (
+    classySpacyInternalFewShot,
+    classySpacyInternalFewShotMultiLabel,
+)
 
-__all__ = ["classyClassifier", "classySpacyFewShotExternal", "classySpacyZeroShotExternal", "classySpacyInternal"]
+__all__ = [
+    "classyClassifier",
+    "classySpacyExternalFewShot",
+    "classySpacyExternalFewShotMultiLabel",
+    "classySpacyExternalZeroShot",
+    "classySpacyInternalFewShot",
+    "classySpacyInternalFewShotMultiLabel",
+]
 
 
 @Language.factory(
@@ -18,7 +31,7 @@ __all__ = ["classyClassifier", "classySpacyFewShotExternal", "classySpacyZeroSho
         "data": None,
         "model": None,
         "device": "cpu",
-        "config": {"C": [1, 2, 5, 10, 20, 100], "kernels": ["linear"], "max_cross_validation_folds": 5},
+        "config": None,
         "cat_type": "few",
         "include_doc": True,
         "include_sent": False,
@@ -29,7 +42,7 @@ def make_text_categorizer(
     name: str,
     data: Union[dict, list],
     device: str,
-    config: dict,
+    config: dict = None,
     model: str = None,
     cat_type: str = "few",
     include_doc: bool = True,
@@ -37,9 +50,9 @@ def make_text_categorizer(
 ):
     if model == "spacy":
         if cat_type == "zero":
-            raise NotImplementedError("cannot use spacy internal embeddings with zero-shot classification")
+            raise NotImplementedError("Cannot use spacy internal embeddings with zero-shot classification")
         elif cat_type == "multi-label":
-            return classySpacyInternalMultiLabel(
+            return classySpacyInternalFewShotMultiLabel(
                 nlp=nlp,
                 name=name,
                 data=data,
@@ -48,7 +61,7 @@ def make_text_categorizer(
                 include_sent=include_sent,
             )
         else:
-            return classySpacyInternal(
+            return classySpacyInternalFewShot(
                 nlp=nlp,
                 name=name,
                 data=data,
@@ -59,7 +72,7 @@ def make_text_categorizer(
     else:
         if cat_type == "zero":
             if model:
-                return classySpacyZeroShotExternal(
+                return classySpacyExternalZeroShot(
                     nlp=nlp,
                     name=name,
                     data=data,
@@ -69,7 +82,27 @@ def make_text_categorizer(
                     include_sent=include_sent,
                 )
             else:
-                return classySpacyZeroShotExternal(
+                return classySpacyExternalZeroShot(
+                    nlp=nlp,
+                    name=name,
+                    data=data,
+                    device=device,
+                    include_doc=include_doc,
+                    include_sent=include_sent,
+                )
+        elif cat_type == "multi-label":
+            if model:
+                return classySpacyExternalFewShotMultiLabel(
+                    nlp=nlp,
+                    name=name,
+                    data=data,
+                    device=device,
+                    model=model,
+                    include_doc=include_doc,
+                    include_sent=include_sent,
+                )
+            else:
+                return classySpacyExternalFewShotMultiLabel(
                     nlp=nlp,
                     name=name,
                     data=data,
@@ -79,7 +112,7 @@ def make_text_categorizer(
                 )
         else:
             if model:
-                return classySpacyFewShotExternal(
+                return classySpacyExternalFewShot(
                     nlp=nlp,
                     name=name,
                     data=data,
@@ -90,7 +123,7 @@ def make_text_categorizer(
                     include_sent=include_sent,
                 )
             else:
-                return classySpacyFewShotExternal(
+                return classySpacyExternalFewShot(
                     nlp=nlp,
                     name=name,
                     data=data,
