@@ -1,6 +1,7 @@
+from fast_sentence_transformers.txtai import HFOnnx
+from fast_sentence_transformers.txtai.text import Labels
 from spacy import Language, util
 from spacy.tokens import Doc, Span
-from transformers import pipeline
 
 
 class classySpacyZeroShotExternal(object):
@@ -94,13 +95,17 @@ class classySpacyZeroShotExternal(object):
         if device:
             self.device = device
 
-        if self.device == "gpu":
-            self.pipeline = pipeline("zero-shot-classification", model=self.model, device=0)
-        else:
-            self.pipeline = pipeline("zero-shot-classification", model=self.model)
+        # Export model to ONNX
+        onnx = HFOnnx()
+        onnx_model = onnx(self.model, "text-classification", "zero-shot.onnx", quantize=False)
 
-    @staticmethod
-    def format_prediction(prediction):
+        # Run inference and validate
+        if self.device == "gpu":
+            self.pipeline = Labels((onnx_model, self.model), dynamic=True, gpu=True)
+        else:
+            self.pipeline = Labels((onnx_model, self.model), dynamic=True)
+
+    def format_prediction(self, prediction):
         """
         It takes a prediction dictionary and returns a list of dictionaries, where each dictionary has a single key-value
         pair
@@ -108,4 +113,4 @@ class classySpacyZeroShotExternal(object):
         :param prediction: The prediction returned by the model
         :return: A list of dictionaries.
         """
-        return [{label: score} for label, score in zip(prediction["labels"], prediction["scores"])]
+        return [{self.data[pred[0]]: pred[1] for pred in prediction}]

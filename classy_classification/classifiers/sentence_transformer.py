@@ -1,6 +1,9 @@
 from typing import List, Union
 
-from sentence_transformers import SentenceTransformer
+import onnxruntime
+from fast_sentence_transformers.txtai import HFOnnx
+from onnxruntime import InferenceSession, SessionOptions
+from transformers import AutoTokenizer
 
 from .classy_skeleton import classySkeleton
 
@@ -31,7 +34,21 @@ class classySentenceTransformer(classySkeleton):
         if device:
             self.device = device
 
-        self.embedding_model = SentenceTransformer(self.model, device=self.device)
+        onnx = HFOnnx()
+        embeddings = onnx(self.model, "pooling", "embeddings.onnx", quantize=True)
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model)
+        options = SessionOptions()
+        onnxproviders = onnxruntime.get_available_providers()
+
+        if self.device == "cpu":
+            fast_onnxprovider = "CPUExecutionProvider"
+        else:
+            if "CUDAExecutionProvider" not in onnxproviders:
+                print("Using CPU. Try installing 'onnxruntime-gpu' or 'fast-sentence-transformers[gpu]'.")
+                fast_onnxprovider = "CPUExecutionProvider"
+            else:
+                fast_onnxprovider = "CUDAExecutionProvider"
+        self.session = InferenceSession(embeddings, options, providers=[fast_onnxprovider])
 
         if model:  # update if overwritten
             self.set_training_data()
@@ -46,4 +63,6 @@ class classySentenceTransformer(classySkeleton):
         Returns:
             List[List[float]]: output embeddings
         """
-        return self.embedding_model.encode(X)
+        inputs = self.tokenizer(X, padding=True, truncation=True, max_length=512, return_tensors="pt")
+        ort_inputs = {k: v.cpu().numpy() for k, v in inputs.items()}
+        return self.session.run(None, ort_inputs)[0]

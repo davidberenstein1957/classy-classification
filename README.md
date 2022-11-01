@@ -1,5 +1,5 @@
 # Classy Classification
-Have you every struggled with needing a [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) but didn't have the time to train one from scratch? Classy Classification is the way to go! For few-shot classification using [sentence-transformers](https://github.com/UKPLab/sentence-transformers) or [spaCy models](https://spacy.io/usage/models), provide a dictionary with labels and examples, or just provide a list of labels for zero shot-classification with [Hugginface zero-shot classifiers](https://huggingface.co/models?pipeline_tag=zero-shot-classification). 
+Have you every struggled with needing a [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) but didn't have the time to train one from scratch? Classy Classification is the way to go! For few-shot classification using [sentence-transformers](https://github.com/UKPLab/sentence-transformers) or [spaCy models](https://spacy.io/usage/models), provide a dictionary with labels and examples, or just provide a list of labels for zero shot-classification with [Hugginface zero-shot classifiers](https://huggingface.co/models?pipeline_tag=zero-shot-classification).
 
 [![Current Release Version](https://img.shields.io/github/release/pandora-intelligence/classy-classification.svg?style=flat-square&logo=github)](https://github.com/pandora-intelligence/classy-classification/releases)
 [![pypi Version](https://img.shields.io/pypi/v/classy-classification.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/classy-classification/)
@@ -10,7 +10,7 @@ Have you every struggled with needing a [Spacy TextCategorizer](https://spacy.io
 ``` pip install classy-classification```
 # Quickstart
 ## SpaCy embeddings
-```
+```python
 import spacy
 import classy_classification
 
@@ -25,12 +25,12 @@ data = {
 
 nlp = spacy.load("en_core_web_md")
 nlp.add_pipe(
-    "text_categorizer", 
+    "text_categorizer",
     config={
-        "data": data, 
+        "data": data,
         "model": "spacy"
     }
-) 
+)
 
 print(nlp("I am looking for kitchen appliances.")._.cats)
 
@@ -74,7 +74,7 @@ print(nlp("texts about dinner tables have multiple labels.")._.cats)
 # [{"label": "furniture", "score": 0.94}, {"label": "kitchen", "score": 0.97}]
 ```
 ## Sentence-transfomer embeddings
-```
+```python
 import spacy
 import classy_classification
 
@@ -89,13 +89,13 @@ data = {
 
 nlp = spacy.blank("en")
 nlp.add_pipe(
-    "text_categorizer", 
+    "text_categorizer",
     config={
-        "data": data, 
+        "data": data,
         "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
         "device": "gpu"
     }
-) 
+)
 
 print(nlp("I am looking for kitchen appliances.")._.cats)
 
@@ -104,7 +104,7 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 # [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
 ```
 ## Hugginface zero-shot classifiers
-```
+```python
 import spacy
 import classy_classification
 
@@ -112,14 +112,14 @@ data = ["furniture", "kitchen"]
 
 nlp = spacy.blank("en")
 nlp.add_pipe(
-    "text_categorizer", 
+    "text_categorizer",
     config={
-        "data": data, 
+        "data": data,
         "model": "facebook/bart-large-mnli",
         "cat_type": "zero",
         "device": "gpu"
     }
-) 
+)
 
 print(nlp("I am looking for kitchen appliances.")._.cats)
 
@@ -129,10 +129,10 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 ```
 # Credits
 ## Inspiration Drawn From
-[Huggingface](https://huggingface.co/) does offer some nice models for few/zero-shot classification, but these are not tailored to multi-lingual approaches. Rasa NLU has [a nice approach](https://rasa.com/blog/rasa-nlu-in-depth-part-1-intent-classification/) for this, but its too embedded in their codebase for easy usage outside of Rasa/chatbots. Additionally, it made sense to integrate [sentence-transformers](https://github.com/UKPLab/sentence-transformers) and [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification), instead of default [word embeddings](https://arxiv.org/abs/1301.3781). Finally, I decided to integrate with Spacy, since training a custom [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) seems like a lot of hassle if you want something quick and dirty. 
+[Huggingface](https://huggingface.co/) does offer some nice models for few/zero-shot classification, but these are not tailored to multi-lingual approaches. Rasa NLU has [a nice approach](https://rasa.com/blog/rasa-nlu-in-depth-part-1-intent-classification/) for this, but its too embedded in their codebase for easy usage outside of Rasa/chatbots. Additionally, it made sense to integrate [sentence-transformers](https://github.com/UKPLab/sentence-transformers) and [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification), instead of default [word embeddings](https://arxiv.org/abs/1301.3781). Finally, I decided to integrate with Spacy, since training a custom [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) seems like a lot of hassle if you want something quick and dirty.
 
 - [Scikit-learn](https://github.com/scikit-learn/scikit-learn)
-- [Rasa NLU](https://github.com/RasaHQ/rasa) 
+- [Rasa NLU](https://github.com/RasaHQ/rasa)
 - [Sentence Transformers](https://github.com/UKPLab/sentence-transformers)
 - [Spacy](https://github.com/explosion/spaCy)
 
@@ -142,7 +142,8 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 
 # Standalone usage without spaCy
 
-```
+```python
+
 from classy_classification import classyClassifier
 
 data = {
@@ -168,14 +169,35 @@ classifier("I am looking for kitchen appliances.")
 
 # overwrite SVC config
 classifier.set_svc(
-    config={                              
+    config={
         "C": [1, 2, 5, 10, 20, 100],
-        "kernels": ["linear"],                              
+        "kernels": ["linear"],
         "max_cross_validation_folds": 5
     }
 )
 classifier("I am looking for kitchen appliances.")
 ```
+
+## Save and load models
+```python
+data = {
+    "furniture": ["This text is about chairs.",
+               "Couches, benches and televisions.",
+               "I really need to get a new sofa."],
+    "kitchen": ["There also exist things like fridges.",
+                "I hope to be getting a new stove today.",
+                "Do you also have some ovens."]
+}
+classifier = classyClassifier(data=data)
+
+with open("./classifier.pkl", "wb") as f:
+    pickle.dump(classifier, f)
+
+f = open("./classifier.pkl", "rb")
+classifier = pickle.load(f)
+classifier("I am looking for kitchen appliances.")
+```
+
 
 # Todo
 
