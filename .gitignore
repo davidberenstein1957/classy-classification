@@ -129,5 +129,9 @@ dmypy.json
 .pyre/
 
 # Downloaded models
+*.model
+*.model.*
+# OS
+**/*.DS_Store
 /models
 *.onnx

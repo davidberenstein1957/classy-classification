@@ -6,7 +6,7 @@ from .classifiers.sentence_transformer import (
     classySentenceTransformer as classyClassifier,
 )
 from .classifiers.spacy_few_shot_external import classySpacyFewShotExternal
-from .classifiers.spacy_internal import classySpacyInternal
+from .classifiers.spacy_internal import classySpacyInternal, classySpacyInternalMultiLabel
 from .classifiers.spacy_zero_shot_external import classySpacyZeroShotExternal
 
 __all__ = ["classyClassifier", "classySpacyFewShotExternal", "classySpacyZeroShotExternal", "classySpacyInternal"]
@@ -38,9 +38,24 @@ def make_text_categorizer(
     if model == "spacy":
         if cat_type == "zero":
             raise NotImplementedError("cannot use spacy internal embeddings with zero-shot classification")
-        return classySpacyInternal(
-            nlp=nlp, name=name, data=data, config=config, include_doc=include_doc, include_sent=include_sent
-        )
+        elif cat_type == "multi-label":
+            return classySpacyInternalMultiLabel(
+                nlp=nlp,
+                name=name,
+                data=data,
+                config=config,
+                include_doc=include_doc,
+                include_sent=include_sent,
+            )
+        else:
+            return classySpacyInternal(
+                nlp=nlp,
+                name=name,
+                data=data,
+                config=config,
+                include_doc=include_doc,
+                include_sent=include_sent,
+            )
     else:
         if cat_type == "zero":
             if model:
