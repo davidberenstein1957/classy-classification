@@ -28,7 +28,7 @@ python = ">=3.8,<3.12"
 spacy = {extras = ["transformers"], version = "^3.0"}
 sentence-transformers = "^2.0"
 scikit-learn = "^1.0"
-fast-sentence-transformers = "^0.3.2.2"
+fast-sentence-transformers = "^0.3.3"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"

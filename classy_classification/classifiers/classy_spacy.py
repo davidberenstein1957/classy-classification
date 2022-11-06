@@ -3,6 +3,7 @@ from typing import List, Union
 
 import numpy as np
 import onnxruntime
+from fast_sentence_transformers import FastSentenceTransformer
 from fast_sentence_transformers.txtai import HFOnnx
 from fast_sentence_transformers.txtai.text import Labels
 from onnxruntime import InferenceSession, SessionOptions
@@ -131,7 +132,7 @@ class classySpacyExternal(classySpacy):
         else:
             raise ValueError("This should be a List")
 
-        return self.endcoder.encode(docs)
+        return self.encoder.encode(docs)
 
     def set_embedding_model(self, model: str = None, device: str = "cpu", onnx=False):
         """set the embedding model based on a sentencetransformer model or path
@@ -144,34 +145,10 @@ class classySpacyExternal(classySpacy):
         if device:
             self.device = device
 
-        if onnx:
-            from fast_sentence_transformers import FastSentenceTransformer
-
-            if device == "gpu":
-                self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=False)
-            else:
-                warnings.warn("Not using quantization because this is not enabled via ONNX.")
-                self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=True)
+        if device == "gpu":
+            self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=False)
         else:
-            from sentence_transformers import SentenceTransformer
-
-            self.encoder = SentenceTransformer(self.model, device=self.device)
-
-        # onnx = HFOnnx()
-        # embeddings = onnx(self.model, "pooling", "embeddings.onnx", quantize=True)
-        # self.tokenizer = AutoTokenizer.from_pretrained(self.model)
-        # options = SessionOptions()
-        # onnxproviders = onnxruntime.get_available_providers()
-
-        # if self.device == "cpu":
-        #     fast_onnxprovider = "CPUExecutionProvider"
-        # else:
-        #     if "CUDAExecutionProvider" not in onnxproviders:
-        #         print("Using CPU. Try installing 'onnxruntime-gpu' or 'fast-sentence-transformers[gpu]'.")
-        #         fast_onnxprovider = "CPUExecutionProvider"
-        #     else:
-        #         fast_onnxprovider = "CUDAExecutionProvider"
-        # self.session = InferenceSession(embeddings, options, providers=[fast_onnxprovider])
+            self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=True)
 
         if model:  # update if overwritten
             self.set_training_data()

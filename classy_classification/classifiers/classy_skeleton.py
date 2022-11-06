@@ -150,16 +150,18 @@ class classySkeletonFewShot(classySkeleton):
         cv_splits = max(2, min(folds, np.min(np.bincount(self.y)) // 5))
         if len(self.label_list):
             svm = SVC(C=1, probability=True, class_weight="balanced")
+            self.clf = GridSearchCV(
+                svm,
+                param_grid=tuned_parameters,
+                n_jobs=1,
+                cv=cv_splits,
+                scoring="f1_weighted",
+                verbose=0,
+            )
         else:
-            svm = OneClassSVM(probability=True, class_weight="balanced")
-        self.clf = GridSearchCV(
-            svm,
-            param_grid=tuned_parameters,
-            n_jobs=1,
-            cv=cv_splits,
-            scoring="f1_weighted",
-            verbose=0,
-        )
+            svm = OneClassSVM(probability=True)
+            self.clf = GridSearchCV(svm, param_grid=tuned_parameters, cv=cv_splits, n_jobs=1, verbose=0)
+
         self.clf.fit(self.X, self.y)
 
     def set_config(self, config):

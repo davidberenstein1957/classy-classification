@@ -143,7 +143,7 @@ python-versions = "*"
 
 [[package]]
 name = "fast-sentence-transformers"
-version = "0.3.2.2"
+version = "0.3.3"
 description = "This repository contains code to run faster sentence-transformers using tools like quantization, ONNX and pruning."
 category = "main"
 optional = false
@@ -1190,7 +1190,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.8,<3.12"
-content-hash = "adb9bbdefe938f3ec683c4cec5429e20982dc4ad7417708fb389238bfa183eb9"
+content-hash = "b1055e373b84b2035c797dc959682d6db3553eaf0d18d1aa58238f1a84b10c7a"
 
 [metadata.files]
 attrs = [
@@ -1311,8 +1311,8 @@ distlib = [
     {file = "distlib-0.3.6.tar.gz", hash = "sha256:14bad2d9b04d3a36127ac97f30b12a19268f211063d8f8ee4f47108896e11b46"},
 ]
 fast-sentence-transformers = [
-    {file = "fast-sentence-transformers-0.3.2.2.tar.gz", hash = "sha256:f71994d16d034dea6a60c302bace8d3549023906261eaa6580250fd1da61f3dd"},
-    {file = "fast_sentence_transformers-0.3.2.2-py3-none-any.whl", hash = "sha256:7db76c9beaddd770346086eb423262a422fcc7cfe4543e1b80056ee83dfd7be8"},
+    {file = "fast_sentence_transformers-0.3.3-py3-none-any.whl", hash = "sha256:af1a2195a1a0772dbdbe519d84ebfe5cf62f14b284ee72d720909a25480bfab5"},
+    {file = "fast_sentence_transformers-0.3.3.tar.gz", hash = "sha256:4f01162a3b049d713c5da3c35b1e432094481143b79589a4f7a047a7b91ffad0"},
 ]
 filelock = [
     {file = "filelock-3.8.0-py3-none-any.whl", hash = "sha256:617eb4e5eedc82fc5f47b6d61e4d11cb837c56cb4544e39081099fa17ad109d4"},

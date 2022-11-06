@@ -13,7 +13,7 @@ def spacy_internal_multi_label():
     return nlp
 
 
-def test_spacy_multi_label():
+def test_spacy_internal_multi_label(spacy_internal_multi_label):
     doc = spacy_internal_multi_label(validation_data[0])
     assert doc._.cats
     for sent in doc.sents:

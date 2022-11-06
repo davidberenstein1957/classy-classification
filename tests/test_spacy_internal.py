@@ -20,7 +20,7 @@ def spacy_internal():
     return nlp
 
 
-def test_spacy(spacy_internal):
+def test_spacy_internal(spacy_internal):
     doc = spacy_internal(validation_data[0])
     assert isclose(sum(doc._.cats.values()), 1)
     for sent in doc.sents:
