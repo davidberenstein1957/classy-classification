@@ -21,4 +21,8 @@ training_data = {
     ],
 }
 
-validation_data = ["I am surely talking about politics.", "Sports is all you need.", "Weather is amazing."]
+validation_data = [
+    "I am surely talking about politics.",
+    "Sports is all you need.",
+    "The weather is amazing and sunny and cloudy.",
+]

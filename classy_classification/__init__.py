@@ -2,18 +2,16 @@ from typing import Union
 
 from spacy.language import Language
 
-from .classifiers.sentence_transformer import (
-    classySentenceTransformer as classyClassifier,
-)
-from .classifiers.spacy_external import (
+from .classifiers.classy_spacy import (
     classySpacyExternalFewShot,
     classySpacyExternalFewShotMultiLabel,
-    classySpacyExternalZeroShot,
-)
-from .classifiers.spacy_internal import (
     classySpacyInternalFewShot,
     classySpacyInternalFewShotMultiLabel,
 )
+from .classifiers.sentence_transformer import (
+    classySentenceTransformer as classyClassifier,
+)
+from .classifiers.spacy_external import classySpacyExternalZeroShot
 
 __all__ = [
     "classyClassifier",
@@ -33,6 +31,7 @@ __all__ = [
         "device": "cpu",
         "config": None,
         "cat_type": "few",
+        "multi_label": False,
         "include_doc": True,
         "include_sent": False,
     },
@@ -45,13 +44,14 @@ def make_text_categorizer(
     config: dict = None,
     model: str = None,
     cat_type: str = "few",
+    multi_label: bool = False,
     include_doc: bool = True,
     include_sent: bool = False,
 ):
     if model == "spacy":
         if cat_type == "zero":
             raise NotImplementedError("Cannot use spacy internal embeddings with zero-shot classification")
-        elif cat_type == "multi-label":
+        if multi_label:
             return classySpacyInternalFewShotMultiLabel(
                 nlp=nlp,
                 name=name,
@@ -90,7 +90,7 @@ def make_text_categorizer(
                     include_doc=include_doc,
                     include_sent=include_sent,
                 )
-        elif cat_type == "multi-label":
+        if multi_label:
             if model:
                 return classySpacyExternalFewShotMultiLabel(
                     nlp=nlp,

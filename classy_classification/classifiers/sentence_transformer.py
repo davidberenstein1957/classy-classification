@@ -5,10 +5,10 @@ from fast_sentence_transformers.txtai import HFOnnx
 from onnxruntime import InferenceSession, SessionOptions
 from transformers import AutoTokenizer
 
-from .classy_skeleton import classySkeleton
+from .classy_skeleton import classySkeletonFewShot
 
 
-class classySentenceTransformer(classySkeleton):
+class classySentenceTransformer(classySkeletonFewShot):
     def __init__(
         self,
         model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -68,7 +68,7 @@ class classySentenceTransformer(classySkeleton):
         return self.session.run(None, ort_inputs)[0]
 
 
-class classySentenceTransformer(classySkeleton):
+class classySentenceTransformerMultiLabel(object):
     def __init__(
         self,
         model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -82,7 +82,7 @@ class classySentenceTransformer(classySkeleton):
         self.set_training_data()
         self.set_classification_model()
 
-    def set_embedding_model(self, model: str = None, device: str = "cpu"):
+    def set_embedding_model(self, model: str = None, device: str = "cpu", onnx=False):
         """set the embedding model based on a sentencetransformer model or path
 
         Args:
@@ -108,6 +108,7 @@ class classySentenceTransformer(classySkeleton):
             else:
                 fast_onnxprovider = "CUDAExecutionProvider"
         self.session = InferenceSession(embeddings, options, providers=[fast_onnxprovider])
+        self.sentence_transformer = FastSentenceTransformer()
 
         if model:  # update if overwritten
             self.set_training_data()
@@ -124,5 +125,5 @@ class classySentenceTransformer(classySkeleton):
         """
         inputs = self.tokenizer(X, padding=True, truncation=True, max_length=512, return_tensors="pt")
         ort_inputs = {k: v.cpu().numpy() for k, v in inputs.items()}
-
+        return self.sentence_transformer
         return self.session.run(None, ort_inputs)[0]

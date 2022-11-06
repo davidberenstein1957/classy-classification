@@ -4,7 +4,8 @@ import numpy as np
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
 from sklearn.neural_network import MLPClassifier
-from sklearn.svm import SVC
+from sklearn.svm import SVC, OneClassSVM
+from spacy import util
 from spacy.language import Language
 from spacy.tokens import Doc, Span
 
@@ -51,6 +52,18 @@ class classySkeleton(object):
             Doc.set_extension("cats", default=None, force=True)
         self.set_training_data()
         self.set_classification_model()
+
+    def set_training_data(self):
+        """Overwritten by super class"""
+        raise NotImplementedError("Needs to be overwritten by superclass")
+
+    def set_classification_model(self):
+        """Overwritten by super class"""
+        raise NotImplementedError("Needs to be overwritten by superclass")
+
+    def get_embeddings(self):
+        """Overwritten by super class"""
+        raise NotImplementedError("Needs to be overwritten by superclass")
 
     def __call__(self, text: str) -> dict:
         """predict the class for an input text
@@ -108,6 +121,9 @@ class classySkeletonFewShot(classySkeleton):
         labels = []
         X = []
         self.label_list = list(self.data.keys())
+        assert len(list(self.label_list)) == len(
+            set(self.label_list)
+        ), "Do not provide duplicate labels for training data."
         for key, value in self.data.items():
             labels += len(value) * [key]
             X += value
@@ -132,8 +148,12 @@ class classySkeletonFewShot(classySkeleton):
         tuned_parameters = [{"C": C, "kernel": [str(k) for k in kernels]}]
         folds = self.config["max_cross_validation_folds"]
         cv_splits = max(2, min(folds, np.min(np.bincount(self.y)) // 5))
+        if len(self.label_list):
+            svm = SVC(C=1, probability=True, class_weight="balanced")
+        else:
+            svm = OneClassSVM(probability=True, class_weight="balanced")
         self.clf = GridSearchCV(
-            SVC(C=1, probability=True, class_weight="balanced"),
+            svm,
             param_grid=tuned_parameters,
             n_jobs=1,
             cv=cv_splits,

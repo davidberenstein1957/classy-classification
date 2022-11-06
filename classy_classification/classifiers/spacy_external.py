@@ -118,7 +118,7 @@ class classySpacyExternalZeroShot(classySkeleton):
             self.pipeline = Labels((onnx_model, self.model), dynamic=True)
 
     def set_training_data(self, data: dict = None):
-        """Zero-shot doesn't require training data"""
+        """Zero-shot models don't require training data"""
         pass
 
     def format_prediction(self, prediction):
