@@ -1,3 +1,5 @@
+from math import isclose
+
 import pytest
 import spacy
 
@@ -19,12 +21,12 @@ def spacy_external():
 
 def test_spacy_external(spacy_external):
     doc = spacy_external(validation_data[0])
-    assert sum(doc._.cats.values()) <= 1
+    assert isclose(sum(doc._.cats.values()), 1)
     for sent in doc.sents:
-        assert sum(sent._.cats.values()) <= 1
+        assert isclose(sum(sent._.cats.values()), 1)
 
     docs = spacy_external.pipe(validation_data)
     for doc in docs:
-        assert sum(doc._.cats.values()) <= 1
+        assert isclose(sum(doc._.cats.values()), 1)
         for sent in doc.sents:
-            assert sum(sent._.cats.values()) <= 1
+            assert isclose(sum(sent._.cats.values()), 1)

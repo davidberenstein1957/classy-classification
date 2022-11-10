@@ -1,31 +1,30 @@
-# import pytest
-# import spacy
+import pytest
+import spacy
 
-# from classy_classification.examples.data import training_data, validation_data
-
-
-# @pytest.fixture
-# def spacy_internal():
-#     nlp = spacy.load("en_core_web_md")
-#     nlp.add_pipe(
-#         "text_categorizer",
-#         config={
-#             "data": training_data,
-#             "model": "spacy",
-#             "include_sent": True,
-#         },
-#     )
-#     return nlp
+from classy_classification.examples.data import training_data, validation_data
 
 
-# def test_spacy(spacy_internal):
-#     doc = spacy_internal(validation_data[0])
-#     assert sum(doc._.cats.values()) <= 1
-#     for sent in doc.sents:
-#         assert sum(sent._.cats.values()) <= 1
+@pytest.fixture
+def spacy_external_multi_label():
+    nlp = spacy.blank("en")
+    nlp.add_pipe(
+        "text_categorizer",
+        config={
+            "data": training_data,
+            "include_sent": True,
+        },
+    )
+    return nlp
 
-#     docs = spacy_internal.pipe(validation_data)
-#     for doc in docs:
-#         assert sum(doc._.cats.values()) <= 1
-#         for sent in doc.sents:
-#             assert sum(sent._.cats.values()) <= 1
+
+def test_spacy_external_multi_label(spacy_external_multi_label):
+    doc = spacy_external_multi_label(validation_data[0])
+    assert doc._.cats
+    for sent in doc.sents:
+        assert sent._.cats
+
+    docs = spacy_external_multi_label.pipe(validation_data)
+    for doc in docs:
+        assert doc._.cats
+        for sent in doc.sents:
+            assert sent._.cats

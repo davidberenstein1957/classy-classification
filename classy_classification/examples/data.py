@@ -20,6 +20,7 @@ training_data = {
         "There is going to be a storm with heavy rainfall.",
     ],
 }
+training_data_single_class = {"politics": training_data["politics"]}
 
 validation_data = [
     "I am surely talking about politics.",

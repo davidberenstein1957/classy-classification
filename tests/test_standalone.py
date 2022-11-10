@@ -1,31 +1,21 @@
-# import pytest
-# import spacy
+from math import isclose
 
-# from classy_classification.examples.data import training_data, validation_data
+import pytest
 
-
-# @pytest.fixture
-# def spacy_internal():
-#     nlp = spacy.load("en_core_web_md")
-#     nlp.add_pipe(
-#         "text_categorizer",
-#         config={
-#             "data": training_data,
-#             "model": "spacy",
-#             "include_sent": True,
-#         },
-#     )
-#     return nlp
+from classy_classification import classyClassifier
+from classy_classification.examples.data import training_data, validation_data
 
 
-# def test_spacy(spacy_internal):
-#     doc = spacy_internal(validation_data[0])
-#     assert sum(doc._.cats.values()) <= 1
-#     for sent in doc.sents:
-#         assert sum(sent._.cats.values()) <= 1
+@pytest.fixture
+def standalone():
+    classifier = classyClassifier(data=training_data)
+    return classifier
 
-#     docs = spacy_internal.pipe(validation_data)
-#     for doc in docs:
-#         assert sum(doc._.cats.values()) <= 1
-#         for sent in doc.sents:
-#             assert sum(sent._.cats.values()) <= 1
+
+def test_standalone(standalone):
+    pred = standalone(validation_data[0])
+    assert isclose(sum(pred.values()), 1)
+
+    preds = standalone.pipe(validation_data)
+    for pred in preds:
+        assert isclose(sum(pred.values()), 1)

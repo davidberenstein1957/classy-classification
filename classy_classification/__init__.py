@@ -5,13 +5,11 @@ from spacy.language import Language
 from .classifiers.classy_spacy import (
     classySpacyExternalFewShot,
     classySpacyExternalFewShotMultiLabel,
+    classySpacyExternalZeroShot,
     classySpacyInternalFewShot,
     classySpacyInternalFewShotMultiLabel,
 )
-from .classifiers.sentence_transformer import (
-    classySentenceTransformer as classyClassifier,
-)
-from .classifiers.spacy_external import classySpacyExternalZeroShot
+from .classifiers.classy_standalone import classySentenceTransformer as classyClassifier
 
 __all__ = [
     "classyClassifier",
@@ -71,6 +69,8 @@ def make_text_categorizer(
             )
     else:
         if cat_type == "zero":
+            if multi_label:
+                raise NotImplementedError("Cannot use multi-label classification with zeroshot models.")
             if model:
                 return classySpacyExternalZeroShot(
                     nlp=nlp,

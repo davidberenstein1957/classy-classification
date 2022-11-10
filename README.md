@@ -123,7 +123,7 @@ nlp.add_pipe(
     "text_categorizer",
     config={
         "data": data,
-        "model": "facebook/bart-large-mnli",
+        "model": "typeform/distilbert-base-uncased-mnli",
         "cat_type": "zero",
         "device": "gpu"
     }
