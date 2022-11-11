@@ -1,28 +1,28 @@
-# from math import isclose
+from math import isclose
 
-# import pytest
-# import spacy
+import pytest
+import spacy
 
-# from classy_classification.examples.data import training_data, validation_data
-
-
-# @pytest.fixture
-# def spacy_external_zer_shot():
-#     nlp = spacy.blank("en")
-#     nlp.add_pipe(
-#         "text_categorizer", config={"data": list(training_data.keys()), "cat_type": "zero", "include_sent": True}
-#     )
-#     return nlp
+from classy_classification.examples.data import training_data, validation_data
 
 
-# def test_spacy_external_zer_shot(spacy_external_zer_shot):
-#     doc = spacy_external_zer_shot(validation_data[0])
-#     assert isclose(sum(doc._.cats.values()), 1)
-#     for sent in doc.sents:
-#         assert isclose(sum(sent._.cats.values()), 1)
+@pytest.fixture
+def spacy_external_zer_shot():
+    nlp = spacy.blank("en")
+    nlp.add_pipe(
+        "text_categorizer", config={"data": list(training_data.keys()), "cat_type": "zero", "include_sent": True}
+    )
+    return nlp
 
-#     docs = spacy_external_zer_shot.pipe(validation_data)
-#     for doc in docs:
-#         assert isclose(sum(doc._.cats.values()), 1)
-#         for sent in doc.sents:
-#             assert isclose(sum(sent._.cats.values()), 1)
+
+def test_spacy_external_zer_shot(spacy_external_zer_shot):
+    doc = spacy_external_zer_shot(validation_data[0])
+    assert isclose(sum(doc._.cats.values()), 1, abs_tol=0.05)
+    for sent in doc.sents:
+        assert isclose(sum(sent._.cats.values()), 1, abs_tol=0.05)
+
+    docs = spacy_external_zer_shot.pipe(validation_data)
+    for doc in docs:
+        assert isclose(sum(doc._.cats.values()), 1, abs_tol=0.05)
+        for sent in doc.sents:
+            assert isclose(sum(sent._.cats.values()), 1, abs_tol=0.05)

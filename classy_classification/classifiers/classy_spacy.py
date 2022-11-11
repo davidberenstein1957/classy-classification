@@ -1,15 +1,14 @@
 import pathlib
-import warnings
 from typing import List, Union
 
 import numpy as np
-from fast_sentence_transformers import FastSentenceTransformer
 from fast_sentence_transformers.txtai import HFOnnx
 from fast_sentence_transformers.txtai.text import Labels
 from spacy import util
 from spacy.tokens import Doc
 
 from .classy_skeleton import (
+    classyExternal,
     classySkeleton,
     classySkeletonFewShot,
     classySkeletonFewShotMultiLabel,
@@ -111,53 +110,7 @@ class classySpacyInternalFewShotMultiLabel(classySpacyInternal, classySkeletonFe
         classySkeletonFewShotMultiLabel.__init__(self, *args, **kwargs)
 
 
-class classySpacyExternal:
-    def get_embeddings(self, docs: Union[List[Doc], List[str]]) -> List[List[float]]:
-        """retrieve embeddings from the SentenceTransformer model for a text or list of texts
-
-        Args:
-            X (List[str]): input texts
-
-        Returns:
-            List[List[float]]: output embeddings
-        """
-        # inputs = self.tokenizer(X, padding=True, truncation=True, max_length=512, return_tensors="pt")
-        # ort_inputs = {k: v.cpu().numpy() for k, v in inputs.items()}
-
-        # return self.session.run(None, ort_inputs)[0]
-        docs = list(docs)
-        if isinstance(docs, list):
-            if isinstance(docs[0], str):
-                pass
-            elif isinstance(docs[0], Doc):
-                docs = [doc.text for doc in docs]
-        else:
-            raise ValueError("This should be a List")
-
-        return self.encoder.encode(docs)
-
-    def set_embedding_model(self, model: str = None, device: str = "cpu", onnx=False):
-        """set the embedding model based on a sentencetransformer model or path
-
-        Args:
-            model (str, optional): the model name. Defaults to self.model, if no model is provided.
-        """
-        if model:  # update if overwritten
-            self.model = model
-        if device:
-            self.device = device
-
-        if device == "gpu":
-            self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=False)
-        else:
-            self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=True)
-
-        if model:  # update if overwritten
-            self.set_training_data()
-            self.set_classification_model()
-
-
-class classySpacyExternalFewShot(classySpacy, classySpacyExternal, classySkeletonFewShot):
+class classySpacyExternalFewShot(classySpacy, classyExternal, classySkeletonFewShot):
     def __init__(
         self,
         model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -171,7 +124,7 @@ class classySpacyExternalFewShot(classySpacy, classySpacyExternal, classySkeleto
         classySkeletonFewShot.__init__(self, *args, **kwargs)
 
 
-class classySpacyExternalFewShotMultiLabel(classySpacy, classySpacyExternal, classySkeletonFewShotMultiLabel):
+class classySpacyExternalFewShotMultiLabel(classySpacy, classyExternal, classySkeletonFewShotMultiLabel):
     def __init__(
         self,
         model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",

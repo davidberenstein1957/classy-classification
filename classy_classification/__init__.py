@@ -1,3 +1,4 @@
+import logging
 from typing import Union
 
 from spacy.language import Language
@@ -19,6 +20,8 @@ __all__ = [
     "classySpacyInternalFewShot",
     "classySpacyInternalFewShotMultiLabel",
 ]
+
+logging.captureWarnings(True)
 
 
 @Language.factory(

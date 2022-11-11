@@ -1,11 +1,12 @@
+import warnings
 from typing import List, Union
 
 import numpy as np
+from fast_sentence_transformers import FastSentenceTransformer
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC, OneClassSVM
-from spacy import util
 from spacy.language import Language
 from spacy.tokens import Doc, Span
 
@@ -88,7 +89,14 @@ class classySkeleton:
 
 
 class classySkeletonFewShot(classySkeleton):
-    def set_config(self, config):
+    def set_config(self, config: Union[dict, None] = None):
+        """
+        > This function sets the config attribute of the class to the config parameter if the config parameter is not None,
+        otherwise it sets the config attribute to a default value
+
+        :param config: A dictionary of parameters to be used in the SVM
+        :type config: Union[dict, None]
+        """
         if config is None:
             config = {"C": [1, 2, 5, 10, 20, 100], "kernels": ["linear"], "max_cross_validation_folds": 5}
         self.config = config
@@ -120,10 +128,10 @@ class classySkeletonFewShot(classySkeleton):
                 verbose=0,
             )
         elif len(self.label_list) == 1:
-            tuned_parameters = [{"kernel": [str(k) for k in kernels]}]
-            svm = OneClassSVM()
-            self.clf = GridSearchCV(
-                svm, param_grid=tuned_parameters, cv=cv_splits, scoring="f1_weighted", n_jobs=1, verbose=0
+            raise NotImplementedError(
+                "I have not managed to take an in-depth look into probabilistic predictions for single class"
+                " classification yet. Feel free to provide your input on"
+                " https://github.com/Pandora-Intelligence/classy-classification/issues/12."
             )
         else:
             raise ValueError("Provide input data with Dict[key, List].")
@@ -142,6 +150,7 @@ class classySkeletonFewShot(classySkeleton):
 
         pred_dict = []
         for pred in pred_results:
+            print(self.le.classes_, pred)
             pred_dict.append({label: value for label, value in zip(self.le.classes_, pred)})
 
         return pred_dict
@@ -174,7 +183,14 @@ class classySkeletonFewShot(classySkeleton):
 
 
 class classySkeletonFewShotMultiLabel(classySkeleton):
-    def set_config(self, config: dict = None):
+    def set_config(self, config: Union[dict, None] = None):
+        """
+        > This function sets the config attribute of the class to the config parameter if the config parameter is not None,
+        otherwise it sets the config attribute to a default value
+
+        :param config: A dictionary of parameters to be used in the SVM
+        :type config: Union[dict, None]
+        """
         if config is None:
             config = {"hidden_layer_sizes": (64,), "seed": 42}
         self.config = config
@@ -224,3 +240,49 @@ class classySkeletonFewShotMultiLabel(classySkeleton):
         X = np.unique([sample for values in self.data.values() for sample in values])
         self.X = self.get_embeddings(X.tolist())
         self.y = [[1 if sample in values else 0 for values in self.data.values()] for sample in X]
+
+
+class classyExternal:
+    def get_embeddings(self, docs: Union[List[Doc], List[str]]) -> List[List[float]]:
+        """retrieve embeddings from the SentenceTransformer model for a text or list of texts
+
+        Args:
+            X (List[str]): input texts
+
+        Returns:
+            List[List[float]]: output embeddings
+        """
+        # inputs = self.tokenizer(X, padding=True, truncation=True, max_length=512, return_tensors="pt")
+        # ort_inputs = {k: v.cpu().numpy() for k, v in inputs.items()}
+
+        # return self.session.run(None, ort_inputs)[0]
+        docs = list(docs)
+        if isinstance(docs, list):
+            if isinstance(docs[0], str):
+                pass
+            elif isinstance(docs[0], Doc):
+                docs = [doc.text for doc in docs]
+        else:
+            raise ValueError("This should be a List")
+
+        return self.encoder.encode(docs)
+
+    def set_embedding_model(self, model: str = None, device: str = "cpu", onnx=False):
+        """set the embedding model based on a sentencetransformer model or path
+
+        Args:
+            model (str, optional): the model name. Defaults to self.model, if no model is provided.
+        """
+        if model:  # update if overwritten
+            self.model = model
+        if device:
+            self.device = device
+
+        if device == "gpu":
+            self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=False)
+        else:
+            self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=True)
+
+        if model:  # update if overwritten
+            self.set_training_data()
+            self.set_classification_model()

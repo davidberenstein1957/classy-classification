@@ -1,16 +1,13 @@
 from typing import List, Union
 
-from fast_sentence_transformers import FastSentenceTransformer
-from spacy.tokens import Doc
-
 from .classy_spacy import (
+    classyExternal,
     classySkeletonFewShot,
     classySkeletonFewShotMultiLabel,
-    classySpacyExternal,
 )
 
 
-class classyStandalone(classySpacyExternal):
+class classyStandalone(classyExternal):
     def __call__(self, text: str) -> dict:
         """predict the class for an input text
 
