@@ -1,5 +1,3 @@
-from math import isclose
-
 import pytest
 
 from classy_classification import classyClassifier

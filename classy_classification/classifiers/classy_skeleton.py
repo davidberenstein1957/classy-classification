@@ -1,4 +1,3 @@
-import warnings
 from typing import List, Union
 
 import numpy as np
@@ -6,7 +5,7 @@ from fast_sentence_transformers import FastSentenceTransformer
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
 from sklearn.neural_network import MLPClassifier
-from sklearn.svm import SVC, OneClassSVM
+from sklearn.svm import SVC
 from spacy.language import Language
 from spacy.tokens import Doc, Span
 
