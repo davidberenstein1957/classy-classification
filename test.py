@@ -1,20 +1,10 @@
-from classy_classification import classyClassifier
+import spacy
 
-data = {
-    "furniture": [
-        "This text is about chairs.",
-        "Couches, benches and televisions.",
-        "I really need to get a new sofa.",
-    ]
-}
-data_single = {
-    "kitchen": [
-        "There also exist things like fridges.",
-        "I hope to be getting a new stove today.",
-        "Do you also have some ovens.",
-    ]
-}
+from classy_classification.examples.data import training_data
 
-classifier = classyClassifier(data=data_single, multi_label=True)
-print(classifier("Coke is a hell of a drug."))
-classifier.pipe(["I am looking for kitchen appliances."])
+nlp = spacy.blank("en")
+nlp.add_pipe(
+    "text_categorizer",
+    config={"data": list(training_data), "cat_type": "zero", "include_sent": True, "multi_label": True},
+)
+print(nlp("kitchen stuff")._.cats)

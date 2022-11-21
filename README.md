@@ -8,8 +8,14 @@ Have you every struggled with needing a [Spacy TextCategorizer](https://spacy.io
 
 # Install
 ``` pip install classy-classification```
+
+or install with faster inference using onnx.
+
+``` pip install classy-classification[onnx]```
+
 ## ONNX on Mac M1
-Some [installation issues](https://github.com/onnx/onnx/issues/3129) might occur, which can be fixed by these commands. Or set `onnx` to False in the config.
+Some [installation issues](https://github.com/onnx/onnx/issues/3129) might occur, which can be fixed by these commands.
+
 ```
 brew install cmake
 brew install protobuf

@@ -72,8 +72,6 @@ def make_text_categorizer(
             )
     else:
         if cat_type == "zero":
-            if multi_label:
-                raise NotImplementedError("Cannot use multi-label classification with zeroshot models.")
             if model:
                 return classySpacyExternalZeroShot(
                     nlp=nlp,
@@ -83,6 +81,7 @@ def make_text_categorizer(
                     model=model,
                     include_doc=include_doc,
                     include_sent=include_sent,
+                    multi_label=multi_label,
                 )
             else:
                 return classySpacyExternalZeroShot(
@@ -92,6 +91,7 @@ def make_text_categorizer(
                     device=device,
                     include_doc=include_doc,
                     include_sent=include_sent,
+                    multi_label=multi_label,
                 )
         if multi_label:
             if model:

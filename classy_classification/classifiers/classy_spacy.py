@@ -1,9 +1,8 @@
+import importlib.util
 import pathlib
 from typing import List, Union
 
 import numpy as np
-from fast_sentence_transformers.txtai import HFOnnx
-from fast_sentence_transformers.txtai.text import Labels
 from spacy import util
 from spacy.tokens import Doc
 
@@ -139,9 +138,17 @@ class classySpacyExternalFewShotMultiLabel(classySpacy, classyExternal, classySk
 
 
 class classySpacyExternalZeroShot(classySpacy, classySkeleton):
-    def __init__(self, model: str = "typeform/distilbert-base-uncased-mnli", device: str = "cpu", *args, **kwargs):
+    def __init__(
+        self,
+        model: str = "typeform/distilbert-base-uncased-mnli",
+        device: str = "cpu",
+        multi_label: bool = False,
+        *args,
+        **kwargs,
+    ):
         self.model = model
         self.device = device
+        self.multi_label = multi_label
         classySkeleton.__init__(self, *args, **kwargs)
 
     def set_classification_model(self, model: str = None, device: str = None):
@@ -155,18 +162,30 @@ class classySpacyExternalZeroShot(classySpacy, classySkeleton):
         if device:
             self.device = device
 
-        # Export model to ONNX
-        p = pathlib.Path(self.model)
-        if p.parent:
-            p.parent.mkdir(parents=True, exist_ok=True)
-        onnx = HFOnnx()
-        onnx_model = onnx(self.model, "text-classification", f"{self.model}.onnx", quantize=False)
+        if importlib.util.find_spec("fast-sentence-transformers") is None:
+            from transformers import pipeline
 
-        # Run inference and validate
-        if self.device == "gpu":
-            self.pipeline = Labels((onnx_model, self.model), dynamic=True, gpu=True)
+            if self.device in ["gpu", "cuda", 0]:
+                self.device = 0
+            else:
+                self.device = -1
+            self.pipeline = pipeline("zero-shot-classification", model=self.model, device=self.device, top_k=None)
         else:
-            self.pipeline = Labels((onnx_model, self.model), dynamic=True)
+            from fast_sentence_transformers.txtai import HFOnnx
+            from fast_sentence_transformers.txtai.text import Labels
+
+            # Export model to ONNX
+            p = pathlib.Path(self.model)
+            if p.parent:
+                p.parent.mkdir(parents=True, exist_ok=True)
+            onnx = HFOnnx()
+            onnx_model = onnx(self.model, "text-classification", f"{self.model}.onnx", quantize=False)
+
+            # Run inference and validate
+            if self.device in ["gpu", "cuda", 0]:
+                self.pipeline = Labels((onnx_model, self.model), dynamic=True, gpu=True)
+            else:
+                self.pipeline = Labels((onnx_model, self.model), dynamic=True)
 
     def set_config(self, _: dict = None):
         """Zero-shot models don't require a config"""
@@ -192,7 +211,10 @@ class classySpacyExternalZeroShot(classySpacy, classySkeleton):
         :param prediction: The prediction returned by the model
         :return: A list of dictionaries.
         """
-        return {self.data[pred[0]]: pred[1] for pred in prediction}
+        if importlib.util.find_spec("fast-sentence-transformers") is None:
+            return {pred[0]: pred[1] for pred in zip(prediction.get("labels"), prediction.get("scores"))}
+        else:
+            return {self.data[pred[0]]: pred[1] for pred in prediction}
 
     def set_pred_results_for_doc(self, doc: Doc):
         """
@@ -219,7 +241,7 @@ class classySpacyExternalZeroShot(classySpacy, classySkeleton):
             Doc: spacy doc with ._.cats key-class proba-value dict
         """
         if self.include_doc:
-            pred_result = self.pipeline(doc.text, self.data)
+            pred_result = self.pipeline(doc.text, self.data, multi_label=self.multi_label)
             doc._.cats = self.format_prediction(pred_result)
         if self.include_sent:
             self.sentence_pipe(doc)
@@ -241,7 +263,7 @@ class classySpacyExternalZeroShot(classySpacy, classySkeleton):
         for docs in util.minibatch(stream, size=batch_size):
             predictions = [doc.text for doc in docs]
             if self.include_doc:
-                predictions = self.pipeline(predictions, self.data)
+                predictions = self.pipeline(predictions, self.data, multi_label=self.multi_label)
                 predictions = [self.format_prediction(pred) for pred in predictions]
             for doc, pred_result in zip(docs, predictions):
                 if self.include_doc:

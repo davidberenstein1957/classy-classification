@@ -1,13 +1,21 @@
+import importlib.util
 from typing import List, Union
 
 import numpy as np
-from fast_sentence_transformers import FastSentenceTransformer
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from spacy.language import Language
 from spacy.tokens import Doc, Span
+
+onnx = importlib.util.find_spec("fast-sentence-transformers")
+if onnx is None:
+    from sentence_transformers import SentenceTransformer
+else:
+    from fast_sentence_transformers import (
+        FastSentenceTransformer as SentenceTransformer,
+    )
 
 
 class classySkeleton:
@@ -266,7 +274,7 @@ class classyExternal:
 
         return self.encoder.encode(docs)
 
-    def set_embedding_model(self, model: str = None, device: str = "cpu", onnx=False):
+    def set_embedding_model(self, model: str = None, device: str = "cpu"):
         """set the embedding model based on a sentencetransformer model or path
 
         Args:
@@ -277,10 +285,17 @@ class classyExternal:
         if device:
             self.device = device
 
-        if device == "gpu":
-            self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=False)
+        if onnx is None:
+            if self.device in ["gpu", "cuda", 0]:
+                self.device = None  # If None, checks if a GPU can be used.
+            else:
+                self.device = "cpu"
+            self.encoder = SentenceTransformer(self.model, device=self.device)
         else:
-            self.encoder = FastSentenceTransformer(self.model, device=self.device, quantize=True)
+            if device in ["gpu", "cuda", 0]:
+                self.encoder = SentenceTransformer(self.model, device=self.device, quantize=False)
+            else:
+                self.encoder = SentenceTransformer(self.model, device=self.device, quantize=True)
 
         if model:  # update if overwritten
             self.set_training_data()
