@@ -157,7 +157,6 @@ class classySkeletonFewShot(classySkeleton):
 
         pred_dict = []
         for pred in pred_results:
-            print(self.le.classes_, pred)
             pred_dict.append({label: value for label, value in zip(self.le.classes_, pred)})
 
         return pred_dict

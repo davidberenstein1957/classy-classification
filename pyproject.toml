@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "classy-classification"
-version = "0.5.1"
+version = "0.5.2"
 description = "Have you every struggled with needing a Spacy TextCategorizer but didn't have the time to train one from scratch? Classy Classification is the way to go!"
 authors = ["David Berenstein <david.berenstein@pandoraintelligence.com>"]
 license = "MIT"
