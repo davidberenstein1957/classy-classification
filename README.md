@@ -13,7 +13,12 @@ or install with faster inference using onnx.
 
 ``` pip install classy-classification[onnx]```
 
-## ONNX on Mac M1
+## ONNX issues
+
+### pickling
+
+ONNX does show some issues when pickling the data.
+### M1
 Some [installation issues](https://github.com/onnx/onnx/issues/3129) might occur, which can be fixed by these commands.
 
 ```
