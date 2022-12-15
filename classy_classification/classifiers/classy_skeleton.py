@@ -9,8 +9,9 @@ from sklearn.svm import SVC
 from spacy.language import Language
 from spacy.tokens import Doc, Span
 
-onnx = importlib.util.find_spec("fast-sentence-transformers")
-if onnx is None:
+onnx = importlib.util.find_spec(
+    "fast_sentence_transformers"
+) or importlib.util.find_spec("fast-sentence-transformers")if onnx is None:
     from sentence_transformers import SentenceTransformer
 else:
     from fast_sentence_transformers import (
