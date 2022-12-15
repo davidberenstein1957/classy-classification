@@ -81,7 +81,7 @@ nlp.add_pipe(
     config={
         "data": data,
         "model": "spacy",
-        "cat_type": "multi-label",
+        "multi_label": True,
         "config": {"hidden_layer_sizes": (64,), "seed": 42}
     }
 )
