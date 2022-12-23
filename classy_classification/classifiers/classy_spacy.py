@@ -16,7 +16,12 @@ from .classy_skeleton import (
 
 class classySpacy:
     def sentence_pipe(self, doc: Doc):
-        sent_docs = [sent.as_doc() for sent in doc.sents]
+        if doc.has_extension("trf_data"):
+            disable = [comp[0] for comp in self.nlp.components if comp[0] != "transformer"]
+            texts = [sent.text for sent in doc.sents]
+            sent_docs = self.nlp.pipe(texts, disable=disable)
+        else:
+            sent_docs = [sent.as_doc() for sent in doc.sents]
         inferred_sent_docs = self.pipe(iter(sent_docs), include_sent=False)
         for sent_doc, sent in zip(inferred_sent_docs, doc.sents):
             sent._.cats = sent_doc._.cats
@@ -92,9 +97,12 @@ class classySpacyInternal(classySpacy):
             if doc.has_vector:
                 embeddings.append(doc.vector)
             else:
-                raise NotImplementedError(
-                    "internal spacy embeddings need to be derived from md/lg spacy models not from sm/trf models."
-                )
+                if doc.has_extension("trf_data"):
+                    embeddings.append(doc._.trf_data.model_output.pooler_output[0])
+                else:
+                    raise NotImplementedError(
+                        "internal spacy embeddings need to be derived from md/lg/trf spacy models not from sm models."
+                    )
 
         return np.array(embeddings)
 
