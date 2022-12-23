@@ -9,9 +9,7 @@ from sklearn.svm import SVC
 from spacy.language import Language
 from spacy.tokens import Doc, Span
 
-onnx = importlib.util.find_spec(
-    "fast_sentence_transformers"
-) or importlib.util.find_spec("fast-sentence-transformers")
+onnx = importlib.util.find_spec("fast_sentence_transformers") or importlib.util.find_spec("fast-sentence-transformers")
 if onnx is None:
     from sentence_transformers import SentenceTransformer
 else:
@@ -107,7 +105,12 @@ class classySkeletonFewShot(classySkeleton):
         :type config: Union[dict, None]
         """
         if config is None:
-            config = {"C": [1, 2, 5, 10, 20, 100], "kernels": ["linear"], "max_cross_validation_folds": 5}
+            config = {
+                "C": [1, 2, 5, 10, 20, 100],
+                "kernels": ["linear"],
+                "max_cross_validation_folds": 5,
+                "seed": None,
+            }
         self.config = config
 
     def set_classification_model(self, config: dict = None):
@@ -127,7 +130,11 @@ class classySkeletonFewShot(classySkeleton):
         cv_splits = max(2, min(folds, np.min(np.bincount(self.y)) // 5))
         if len(self.label_list) > 1:
             tuned_parameters = [{"C": C, "kernel": [str(k) for k in kernels]}]
-            svm = SVC(C=1, probability=True, class_weight="balanced")
+            svm = SVC(
+                C=1,
+                probability=True,
+                class_weight="balanced",
+            )
             self.clf = GridSearchCV(
                 svm,
                 param_grid=tuned_parameters,
@@ -200,7 +207,7 @@ class classySkeletonFewShotMultiLabel(classySkeleton):
         :type config: Union[dict, None]
         """
         if config is None:
-            config = {"hidden_layer_sizes": (64,), "seed": 42}
+            config = {"hidden_layer_sizes": (64,), "seed": None}
         self.config = config
 
     def set_classification_model(self, config: dict = None):
