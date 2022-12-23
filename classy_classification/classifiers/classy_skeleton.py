@@ -27,6 +27,7 @@ class classySkeleton:
         include_doc: bool = True,
         include_sent: bool = False,
         config: Union[dict, None] = None,
+        verbose: bool = True,
     ) -> None:
         """initialize a classy skeleton for classification using a SVC config and some input training data.
 
@@ -50,6 +51,7 @@ class classySkeleton:
         self.data = data
         self.name = name
         self.nlp = nlp
+        self.verbose = verbose
         self.include_doc = include_doc
         self.include_sent = include_sent
         if include_sent:
@@ -130,18 +132,14 @@ class classySkeletonFewShot(classySkeleton):
         cv_splits = max(2, min(folds, np.min(np.bincount(self.y)) // 5))
         if len(self.label_list) > 1:
             tuned_parameters = [{"C": C, "kernel": [str(k) for k in kernels]}]
-            svm = SVC(
-                C=1,
-                probability=True,
-                class_weight="balanced",
-            )
+            svm = SVC(C=1, probability=True, class_weight="balanced", verbose=self.verbose)
             self.clf = GridSearchCV(
                 svm,
                 param_grid=tuned_parameters,
                 n_jobs=1,
                 cv=cv_splits,
                 scoring="f1_weighted",
-                verbose=0,
+                verbose=self.verbose,
             )
         elif len(self.label_list) == 1:
             raise NotImplementedError(
@@ -221,7 +219,7 @@ class classySkeletonFewShotMultiLabel(classySkeleton):
 
         hidden_layer_sizes = self.config["hidden_layer_sizes"]
         seed = self.config["seed"]
-        self.clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, random_state=seed)
+        self.clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, random_state=seed, verbose=self.verbose)
         self.clf.fit(self.X, self.y)
 
     def proba_to_dict(self, pred_results: List[List]) -> List[dict]:
@@ -280,7 +278,7 @@ class classyExternal:
         else:
             raise ValueError("This should be a List")
 
-        return self.encoder.encode(docs)
+        return self.encoder.encode(docs, show_progress_bar=self.verbose)
 
     def set_embedding_model(self, model: str = None, device: str = "cpu"):
         """set the embedding model based on a sentencetransformer model or path

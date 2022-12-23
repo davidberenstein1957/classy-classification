@@ -35,6 +35,7 @@ logging.captureWarnings(True)
         "multi_label": False,
         "include_doc": True,
         "include_sent": False,
+        "verbose": False,
     },
 )
 def make_text_categorizer(
@@ -48,6 +49,7 @@ def make_text_categorizer(
     multi_label: bool = False,
     include_doc: bool = True,
     include_sent: bool = False,
+    verbose: bool = False,
 ):
     if model == "spacy":
         if cat_type == "zero":
@@ -60,6 +62,7 @@ def make_text_categorizer(
                 config=config,
                 include_doc=include_doc,
                 include_sent=include_sent,
+                verbose=verbose,
             )
         else:
             return classySpacyInternalFewShot(
@@ -69,6 +72,7 @@ def make_text_categorizer(
                 config=config,
                 include_doc=include_doc,
                 include_sent=include_sent,
+                verbose=verbose,
             )
     else:
         if cat_type == "zero":
@@ -82,6 +86,7 @@ def make_text_categorizer(
                     include_doc=include_doc,
                     include_sent=include_sent,
                     multi_label=multi_label,
+                    verbose=verbose,
                 )
             else:
                 return classySpacyExternalZeroShot(
@@ -92,6 +97,7 @@ def make_text_categorizer(
                     include_doc=include_doc,
                     include_sent=include_sent,
                     multi_label=multi_label,
+                    verbose=verbose,
                 )
         if multi_label:
             if model:
@@ -103,6 +109,7 @@ def make_text_categorizer(
                     model=model,
                     include_doc=include_doc,
                     include_sent=include_sent,
+                    verbose=verbose,
                 )
             else:
                 return classySpacyExternalFewShotMultiLabel(
@@ -112,6 +119,7 @@ def make_text_categorizer(
                     device=device,
                     include_doc=include_doc,
                     include_sent=include_sent,
+                    verbose=verbose,
                 )
         else:
             if model:
@@ -124,6 +132,7 @@ def make_text_categorizer(
                     config=config,
                     include_doc=include_doc,
                     include_sent=include_sent,
+                    verbose=verbose,
                 )
             else:
                 return classySpacyExternalFewShot(
@@ -134,4 +143,5 @@ def make_text_categorizer(
                     config=config,
                     include_doc=include_doc,
                     include_sent=include_sent,
+                    verbose=verbose,
                 )

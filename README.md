@@ -86,7 +86,18 @@ print(nlp("I am looking for kitchen appliances. And I love doing so.").sents[0].
 #
 # [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
 ```
+### Define random seed and verbosity
+```python
 
+nlp.add_pipe(
+    "text_categorizer",
+    config={
+        "data": data,
+        "verbose": True,
+        "config": {"seed": 42}
+    }
+)
+```
 ### Multi-label classification
 Sometimes multiple labels are necessary to fully describe the contents of a text. In that case, we want to make use of the **multi-label** implementation, here the sum of label scores is not limited to 1. Note that we use a multi-layer perceptron for this purpose instead of the default `SVC` implementation, requiring a few more training samples.
 
@@ -112,7 +123,7 @@ nlp.add_pipe(
         "data": data,
         "model": "spacy",
         "multi_label": True,
-        "config": {"hidden_layer_sizes": (64,), "seed": 42}
+        "config": {"hidden_layer_sizes": (64,)}
     }
 )
 
