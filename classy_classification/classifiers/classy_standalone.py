@@ -37,11 +37,7 @@ class classyStandalone(classyExternal):
 
 class classySentenceTransformerFewShot(classyStandalone, classySkeletonFewShot):
     def __init__(
-        self,
-        model: str,
-        device: str,
-        data: dict,
-        config: Union[dict, None] = None,
+        self, model: str, device: str, data: dict, config: Union[dict, None] = None, verbose: bool = False
     ) -> None:
         """initialize a classy skeleton for classification using a SVC config and some input training data.
 
@@ -63,6 +59,7 @@ class classySentenceTransformerFewShot(classyStandalone, classySkeletonFewShot):
         self.data = data
         self.model = model
         self.device = device
+        self.verbose = verbose
         self.set_config(config)
         self.set_embedding_model()
         self.set_training_data()
@@ -70,16 +67,11 @@ class classySentenceTransformerFewShot(classyStandalone, classySkeletonFewShot):
 
 
 class classySentenceTransformerMultiLabel(classyStandalone, classySkeletonFewShotMultiLabel):
-    def __init__(
-        self,
-        model: str,
-        device: str,
-        data: dict,
-        config: Union[dict, None] = None,
-    ):
+    def __init__(self, model: str, device: str, data: dict, config: Union[dict, None] = None, verbose: bool = False):
         self.data = data
         self.model = model
         self.device = device
+        self.verbose = verbose
         self.set_config(config)
         self.set_embedding_model()
         self.set_training_data()
