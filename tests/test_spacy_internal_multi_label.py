@@ -4,9 +4,9 @@ import spacy
 from classy_classification.examples.data import training_data, validation_data
 
 
-@pytest.fixture
-def spacy_internal_multi_label():
-    nlp = spacy.load("en_core_web_md")
+@pytest.fixture(params=["en_core_web_md", "en_core_web_trf"])
+def spacy_internal_multi_label(request):
+    nlp = spacy.load(request.param)
     nlp.add_pipe(
         "text_categorizer", config={"data": training_data, "model": "spacy", "include_sent": True, "multi_label": True}
     )
