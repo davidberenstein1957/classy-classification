@@ -258,7 +258,3 @@ classifier = pickle.load(f)
 classifier("I am looking for kitchen appliances.")
 ```
 
-
-# Todo
-
-[ ] look into a way to integrate spacy trf models.
