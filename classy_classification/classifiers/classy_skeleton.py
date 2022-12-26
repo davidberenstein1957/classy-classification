@@ -2,8 +2,14 @@ import importlib.util
 from typing import List, Union
 
 import numpy as np
+import pandas as pd
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
+from sklearn.multiclass import (
+    OneVsOneClassifier,
+    OneVsRestClassifier,
+    OutputCodeClassifier,
+)
 from sklearn.neural_network import MLPClassifier
 from sklearn.svm import SVC
 from spacy.language import Language
@@ -46,7 +52,7 @@ class classySkeleton:
                     "max_cross_validation_folds": 5
                 }.
         """
-
+        self.multi_target_strategy = "one-vs-one"
         self.set_config(config)
         self.data = data
         self.name = name
@@ -92,7 +98,15 @@ class classySkeleton:
         Returns:
             List[dict]: list of key-class proba-value dict
         """
-        pred_result = self.clf.predict_proba(embeddings)
+        if self.multi_target_strategy == "one-vs-one":
+            pred_result = self.clf.predict()
+        else:
+            pred_result = self.clf.predict_proba(embeddings)
+
+        # if self.multi_target_strategy:
+        #     pred_result = [[1] if idx == pred_result[0] else [0] for idx, lab in enumerate(self.label_list)]
+        # else:
+        #     pred_result = [[1] if idx == pred_result[0] else [0] for idx, lab in enumerate(self.label_list)]
 
         return self.proba_to_dict(pred_result)
 
@@ -106,13 +120,22 @@ class classySkeletonFewShot(classySkeleton):
         :param config: A dictionary of parameters to be used in the SVM
         :type config: Union[dict, None]
         """
+
         if config is None:
-            config = {
-                "C": [1, 2, 5, 10, 20, 100],
-                "kernels": ["linear"],
-                "max_cross_validation_folds": 5,
-                "seed": None,
-            }
+            if self.multi_target_strategy:
+                config = {
+                    "C": 1,
+                    "kernels": "linear",
+                    "seed": None,
+                }
+            else:
+                config = {
+                    "C": [1, 2, 5, 10, 20, 100],
+                    "kernels": ["linear"],
+                    "max_cross_validation_folds": 5,
+                    "seed": None,
+                }
+
         self.config = config
 
     def set_classification_model(self, config: dict = None):
@@ -125,22 +148,37 @@ class classySkeletonFewShot(classySkeleton):
         if config:  # update if overwritten
             self.config = config
 
-        C = self.config["C"]
-        kernels = self.config["kernels"]
-
-        folds = self.config["max_cross_validation_folds"]
-        cv_splits = max(2, min(folds, np.min(np.bincount(self.y)) // 5))
         if len(self.label_list) > 1:
-            tuned_parameters = [{"C": C, "kernel": [str(k) for k in kernels]}]
-            svm = SVC(C=1, probability=True, class_weight="balanced", verbose=self.verbose)
-            self.clf = GridSearchCV(
-                svm,
-                param_grid=tuned_parameters,
-                n_jobs=1,
-                cv=cv_splits,
-                scoring="f1_weighted",
-                verbose=self.verbose,
-            )
+            C = self.config["C"]
+            kernels = self.config["kernels"]
+
+            if self.multi_target_strategy:
+                svm = SVC(C=C, kernel=kernels, probability=True, class_weight="balanced", verbose=self.verbose)
+                if self.multi_target_strategy == "one-vs-one":
+                    self.clf = OneVsOneClassifier(svm)
+                elif self.multi_target_strategy == "one-vs-rest":
+                    self.clf = OneVsRestClassifier(svm)
+                elif self.multi_target_strategy == "output-code":
+                    self.clf = OutputCodeClassifier(svm)
+                else:
+                    raise NotImplementedError("Choose either a `one-vs-one`, `one-vs-rest` or `output-code` model.")
+            else:
+                C = self.config["C"]
+                kernels = self.config["kernels"]
+                tuned_parameters = [{"kernel": [str(k) for k in kernels]}]
+                folds = self.config["max_cross_validation_folds"]
+                cv_splits = max(2, min(folds, np.min(np.bincount(self.y)) // 5))
+
+                svm = SVC(C=C, probability=True, class_weight="balanced", verbose=self.verbose)
+                self.clf = GridSearchCV(
+                    svm,
+                    param_grid=tuned_parameters,
+                    n_jobs=1,
+                    cv=cv_splits,
+                    scoring="f1_weighted",
+                    verbose=self.verbose,
+                )
+
         elif len(self.label_list) == 1:
             raise NotImplementedError(
                 "I have not managed to take an in-depth look into probabilistic predictions for single class"
@@ -178,17 +216,24 @@ class classySkeletonFewShot(classySkeleton):
         if data:  # update if overwritten
             self.data = data
 
-        self.le = preprocessing.LabelEncoder()
         labels = []
         X = []
         self.label_list = list(self.data.keys())
-        assert len(list(self.label_list)) == len(
-            set(self.label_list)
-        ), "Do not provide duplicate labels for training data."
         for key, value in self.data.items():
             labels += len(value) * [key]
             X += value
-        self.y = self.le.fit_transform(labels)
+
+        if self.multi_target_strategy:
+            df = pd.DataFrame(data={"X": X, "labels": labels})
+            groups = df.groupby("X").agg(list).to_records().tolist()
+            X = [group[0] for group in groups]
+            labels = [group[1] for group in groups]
+            self.le = preprocessing.MultiLabelBinarizer()
+            self.y = self.le.fit_transform(labels)
+        else:
+            self.le = preprocessing.LabelEncoder()
+            self.y = self.le.fit_transform(labels)
+
         self.X = self.get_embeddings(X)
 
         if data:  # update if overwritten

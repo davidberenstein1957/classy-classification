@@ -56,6 +56,7 @@ class classySentenceTransformerFewShot(classyStandalone, classySkeletonFewShot):
                     "max_cross_validation_folds": 5
                 }.
         """
+        self.multi_target_strategy = "one-vs-rest"
         self.data = data
         self.model = model
         self.device = device
