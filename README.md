@@ -42,7 +42,7 @@ data = {
                 "Do you also have some ovens."]
 }
 
-nlp = spacy.load("en_core_web_md")
+nlp = spacy.load("en_core_web_trf")
 nlp.add_pipe(
     "text_categorizer",
     config={
