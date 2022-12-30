@@ -268,7 +268,7 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 
 ```python
 
-from classy_classification import classyClassifier
+from classy_classification import ClassyClassifier
 
 data = {
     "furniture": ["This text is about chairs.",
@@ -279,7 +279,7 @@ data = {
                 "Do you also have some ovens."]
 }
 
-classifier = classyClassifier(data=data)
+classifier = ClassyClassifier(data=data)
 classifier("I am looking for kitchen appliances.")
 classifier.pipe(["I am looking for kitchen appliances."])
 
