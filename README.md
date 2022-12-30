@@ -172,7 +172,7 @@ print(nlp("This text is a random text")._.cats)
 #
 # [{'inlier': 0.2926672385488411, 'outlier': 0.707332761451159}]
 ```
-
+Approach 2:
 ```python
 import spacy
 import classy_classification
