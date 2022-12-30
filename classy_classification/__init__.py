@@ -4,21 +4,17 @@ from typing import Union
 from spacy.language import Language
 
 from .classifiers.classy_spacy import (
-    classySpacyExternalFewShot,
-    classySpacyExternalFewShotMultiLabel,
-    classySpacyExternalZeroShot,
-    classySpacyInternalFewShot,
-    classySpacyInternalFewShotMultiLabel,
+    ClassySpacyExternalFewShot,
+    ClassySpacyExternalZeroShot,
+    ClassySpacyInternalFewShot,
 )
-from .classifiers.classy_standalone import classySentenceTransformer as classyClassifier
+from .classifiers.classy_standalone import ClassySentenceTransformer as ClassyClassifier
 
 __all__ = [
-    "classyClassifier",
-    "classySpacyExternalFewShot",
-    "classySpacyExternalFewShotMultiLabel",
-    "classySpacyExternalZeroShot",
-    "classySpacyInternalFewShot",
-    "classySpacyInternalFewShotMultiLabel",
+    "ClassyClassifier",
+    "ClassySpacyExternalFewShot",
+    "ClassySpacyExternalZeroShot",
+    "ClassySpacyInternalFewShot",
 ]
 
 logging.captureWarnings(True)
@@ -51,97 +47,47 @@ def make_text_categorizer(
     include_sent: bool = False,
     verbose: bool = False,
 ):
-    if model == "spacy":
-        if cat_type == "zero":
-            raise NotImplementedError("Cannot use spacy internal embeddings with zero-shot classification")
-        if multi_label:
-            return classySpacyInternalFewShotMultiLabel(
-                nlp=nlp,
-                name=name,
-                data=data,
-                config=config,
-                include_doc=include_doc,
-                include_sent=include_sent,
-                verbose=verbose,
-            )
-        else:
-            return classySpacyInternalFewShot(
-                nlp=nlp,
-                name=name,
-                data=data,
-                config=config,
-                include_doc=include_doc,
-                include_sent=include_sent,
-                verbose=verbose,
-            )
+    if model == "spacy" and cat_type == "zero":
+        raise NotImplementedError("Cannot use spacy internal embeddings with zero-shot classification")
+    elif model == "spacy" and cat_type == "few":
+        return ClassySpacyInternalFewShot(
+            nlp=nlp,
+            name=name,
+            data=data,
+            config=config,
+            include_doc=include_doc,
+            include_sent=include_sent,
+            multi_label=multi_label,
+            verbose=verbose,
+        )
+
+    elif model != "spacy" and cat_type == "zero":
+        return ClassySpacyExternalZeroShot(
+            nlp=nlp,
+            name=name,
+            data=data,
+            device=device,
+            model=model,
+            include_doc=include_doc,
+            include_sent=include_sent,
+            multi_label=multi_label,
+            verbose=verbose,
+        )
+    elif model != "spacy" and cat_type == "few":
+        return ClassySpacyExternalFewShot(
+            nlp=nlp,
+            name=name,
+            data=data,
+            device=device,
+            model=model,
+            config=config,
+            include_doc=include_doc,
+            include_sent=include_sent,
+            multi_label=multi_label,
+            verbose=verbose,
+        )
     else:
-        if cat_type == "zero":
-            if model:
-                return classySpacyExternalZeroShot(
-                    nlp=nlp,
-                    name=name,
-                    data=data,
-                    device=device,
-                    model=model,
-                    include_doc=include_doc,
-                    include_sent=include_sent,
-                    multi_label=multi_label,
-                    verbose=verbose,
-                )
-            else:
-                return classySpacyExternalZeroShot(
-                    nlp=nlp,
-                    name=name,
-                    data=data,
-                    device=device,
-                    include_doc=include_doc,
-                    include_sent=include_sent,
-                    multi_label=multi_label,
-                    verbose=verbose,
-                )
-        if multi_label:
-            if model:
-                return classySpacyExternalFewShotMultiLabel(
-                    nlp=nlp,
-                    name=name,
-                    data=data,
-                    device=device,
-                    model=model,
-                    include_doc=include_doc,
-                    include_sent=include_sent,
-                    verbose=verbose,
-                )
-            else:
-                return classySpacyExternalFewShotMultiLabel(
-                    nlp=nlp,
-                    name=name,
-                    data=data,
-                    device=device,
-                    include_doc=include_doc,
-                    include_sent=include_sent,
-                    verbose=verbose,
-                )
-        else:
-            if model:
-                return classySpacyExternalFewShot(
-                    nlp=nlp,
-                    name=name,
-                    data=data,
-                    device=device,
-                    model=model,
-                    config=config,
-                    include_doc=include_doc,
-                    include_sent=include_sent,
-                    verbose=verbose,
-                )
-            else:
-                return classySpacyExternalFewShot(
-                    nlp=nlp,
-                    name=name,
-                    data=data,
-                    device=device,
-                    config=config,
-                    include_doc=include_doc,
-                    include_sent=include_sent,
-                    verbose=verbose,
-                )
+        raise NotImplementedError(
+            f"`model` as `{model}` is not valid it takes arguments `spacy` and `transformer`. "
+            f"`cat_type` as `{cat_type}` is not valid stakes arguments `zero` and `few`."
+        )

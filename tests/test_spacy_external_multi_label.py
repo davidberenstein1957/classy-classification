@@ -9,10 +9,7 @@ def spacy_external_multi_label():
     nlp = spacy.blank("en")
     nlp.add_pipe(
         "text_categorizer",
-        config={
-            "data": training_data,
-            "include_sent": True,
-        },
+        config={"data": training_data, "include_sent": True, "multi_label": True},
     )
     return nlp
 

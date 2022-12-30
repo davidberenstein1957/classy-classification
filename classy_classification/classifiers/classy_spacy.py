@@ -6,15 +6,10 @@ import numpy as np
 from spacy import util
 from spacy.tokens import Doc
 
-from .classy_skeleton import (
-    classyExternal,
-    classySkeleton,
-    classySkeletonFewShot,
-    classySkeletonFewShotMultiLabel,
-)
+from .classy_skeleton import ClassyExternal, ClassySkeleton, ClassySkeletonFewShot
 
 
-class classySpacy:
+class ClassySpacy:
     def sentence_pipe(self, doc: Doc):
         if doc.has_extension("trf_data"):
             disable = [comp[0] for comp in self.nlp.components if comp[0] != "transformer"]
@@ -72,7 +67,7 @@ class classySpacy:
                 yield doc
 
 
-class classySpacyInternal(classySpacy):
+class ClassySpacyInternal(ClassySpacy):
     def get_embeddings(self, docs: Union[List[Doc], List[str]]) -> List[float]:
         """Retrieve embeddings from text.
         Overwrites function from the classySkeleton that is used to get embeddings for training data to fetch internal
@@ -107,57 +102,42 @@ class classySpacyInternal(classySpacy):
         return np.array(embeddings)
 
 
-class classySpacyInternalFewShot(classySpacyInternal, classySkeletonFewShot):
+class ClassySpacyInternalFewShot(ClassySpacyInternal, ClassySkeletonFewShot):
     def __init__(self, *args, **kwargs):
-        classySkeletonFewShot.__init__(self, *args, **kwargs)
+        ClassySkeletonFewShot.__init__(self, *args, **kwargs)
 
 
-class classySpacyInternalFewShotMultiLabel(classySpacyInternal, classySkeletonFewShotMultiLabel):
-    def __init__(self, *args, **kwargs):
-        classySkeletonFewShotMultiLabel.__init__(self, *args, **kwargs)
-
-
-class classySpacyExternalFewShot(classySpacy, classyExternal, classySkeletonFewShot):
+class ClassySpacyExternalFewShot(ClassySpacy, ClassyExternal, ClassySkeletonFewShot):
     def __init__(
         self,
-        model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        model: str = None,
         device: str = "cpu",
         *args,
         **kwargs,
     ):
+        if model is None:
+            model = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2"
         self.model = model
         self.device = device
         self.set_embedding_model()
-        classySkeletonFewShot.__init__(self, *args, **kwargs)
+        ClassySkeletonFewShot.__init__(self, *args, **kwargs)
 
 
-class classySpacyExternalFewShotMultiLabel(classySpacy, classyExternal, classySkeletonFewShotMultiLabel):
+class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
     def __init__(
         self,
-        model: str = "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
-        device: str = "cpu",
-        *args,
-        **kwargs,
-    ):
-        self.model = model
-        self.device = device
-        self.set_embedding_model()
-        classySkeletonFewShotMultiLabel.__init__(self, *args, **kwargs)
-
-
-class classySpacyExternalZeroShot(classySpacy, classySkeleton):
-    def __init__(
-        self,
-        model: str = "typeform/distilbert-base-uncased-mnli",
+        model: str = None,
         device: str = "cpu",
         multi_label: bool = False,
         *args,
         **kwargs,
     ):
+        if model is None:
+            model = "typeform/distilbert-base-uncased-mnli"
         self.model = model
         self.device = device
         self.multi_label = multi_label
-        classySkeleton.__init__(self, *args, **kwargs)
+        ClassySkeleton.__init__(self, *args, **kwargs)
 
     def set_classification_model(self, model: str = None, device: str = None):
         """set the embedding model based on a sentencetransformer model or path

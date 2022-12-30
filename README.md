@@ -99,7 +99,7 @@ nlp.add_pipe(
 )
 ```
 ### Multi-label classification
-Sometimes multiple labels are necessary to fully describe the contents of a text. In that case, we want to make use of the **multi-label** implementation, here the sum of label scores is not limited to 1. Note that we use a multi-layer perceptron for this purpose instead of the default `SVC` implementation, requiring a few more training samples.
+Sometimes multiple labels are necessary to fully describe the contents of a text. In that case, we want to make use of the **multi-label** implementation, here the sum of label scores is not limited to 1. Just pass the same training data to multiple keys.
 
 ```python
 import spacy
@@ -109,8 +109,16 @@ data = {
     "furniture": ["This text is about chairs.",
                "Couches, benches and televisions.",
                "I really need to get a new sofa.",
-               "We have a new dinner table."],
+               "We have a new dinner table.",
+               "There also exist things like fridges.",
+                "I hope to be getting a new stove today.",
+                "Do you also have some ovens.",
+                "We have a new dinner table."],
     "kitchen": ["There also exist things like fridges.",
+                "I hope to be getting a new stove today.",
+                "Do you also have some ovens.",
+                "We have a new dinner table.",
+                "There also exist things like fridges.",
                 "I hope to be getting a new stove today.",
                 "Do you also have some ovens.",
                 "We have a new dinner table."]
@@ -123,15 +131,14 @@ nlp.add_pipe(
         "data": data,
         "model": "spacy",
         "multi_label": True,
-        "config": {"hidden_layer_sizes": (64,)}
     }
 )
 
-print(nlp("texts about dinner tables have multiple labels.")._.cats)
+print(nlp("I am looking for furniture and kitchen equipment.")._.cats)
 
 # Output:
 #
-# [{"label": "furniture", "score": 0.94}, {"label": "kitchen", "score": 0.97}]
+# [{"label": "furniture", "score": 0.92}, {"label": "kitchen", "score": 0.91}]
 ```
 ## Sentence-transfomer embeddings
 ```python
@@ -231,7 +238,7 @@ classifier("I am looking for kitchen appliances.")
 classifier.set_classification_model(
     config={
         "C": [1, 2, 5, 10, 20, 100],
-        "kernels": ["linear"],
+        "kernel": ["linear"],
         "max_cross_validation_folds": 5
     }
 )
@@ -257,4 +264,3 @@ f = open("./classifier.pkl", "rb")
 classifier = pickle.load(f)
 classifier("I am looking for kitchen appliances.")
 ```
-

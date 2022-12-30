@@ -5,12 +5,7 @@ import numpy as np
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
-from sklearn.multiclass import (
-    OneVsOneClassifier,
-    OneVsRestClassifier,
-    OutputCodeClassifier,
-)
-from sklearn.neural_network import MLPClassifier
+from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC
 from spacy.language import Language
 from spacy.tokens import Doc, Span
@@ -24,7 +19,7 @@ else:
     )
 
 
-class classySkeleton:
+class ClassySkeleton:
     def __init__(
         self,
         nlp: Language,
@@ -32,6 +27,7 @@ class classySkeleton:
         data: dict,
         include_doc: bool = True,
         include_sent: bool = False,
+        multi_label: bool = False,
         config: Union[dict, None] = None,
         verbose: bool = True,
     ) -> None:
@@ -48,11 +44,11 @@ class classySkeleton:
                 example
                 {
                     "C": [1, 2, 5, 10, 20, 100],
-                    "kernels": ["linear"],
+                    "kernel": ["linear"],
                     "max_cross_validation_folds": 5
                 }.
         """
-        self.multi_target_strategy = "one-vs-one"
+        self.multi_label = multi_label
         self.set_config(config)
         self.data = data
         self.name = name
@@ -98,20 +94,12 @@ class classySkeleton:
         Returns:
             List[dict]: list of key-class proba-value dict
         """
-        if self.multi_target_strategy == "one-vs-one":
-            pred_result = self.clf.predict()
-        else:
-            pred_result = self.clf.predict_proba(embeddings)
-
-        # if self.multi_target_strategy:
-        #     pred_result = [[1] if idx == pred_result[0] else [0] for idx, lab in enumerate(self.label_list)]
-        # else:
-        #     pred_result = [[1] if idx == pred_result[0] else [0] for idx, lab in enumerate(self.label_list)]
+        pred_result = self.clf.predict_proba(embeddings)
 
         return self.proba_to_dict(pred_result)
 
 
-class classySkeletonFewShot(classySkeleton):
+class ClassySkeletonFewShot(ClassySkeleton):
     def set_config(self, config: Union[dict, None] = None):
         """
         > This function sets the config attribute of the class to the config parameter if the config parameter is not None,
@@ -122,19 +110,12 @@ class classySkeletonFewShot(classySkeleton):
         """
 
         if config is None:
-            if self.multi_target_strategy:
-                config = {
-                    "C": 1,
-                    "kernels": "linear",
-                    "seed": None,
-                }
-            else:
-                config = {
-                    "C": [1, 2, 5, 10, 20, 100],
-                    "kernels": ["linear"],
-                    "max_cross_validation_folds": 5,
-                    "seed": None,
-                }
+            config = {
+                "C": [1, 2, 5, 10, 20, 100],
+                "kernel": ["linear", "rbf"],
+                "max_cross_validation_folds": 5,
+                "seed": None,
+            }
 
         self.config = config
 
@@ -149,35 +130,39 @@ class classySkeletonFewShot(classySkeleton):
             self.config = config
 
         if len(self.label_list) > 1:
-            C = self.config["C"]
-            kernels = self.config["kernels"]
+            self.svm = SVC(
+                probability=True,
+                class_weight="balanced",
+                verbose=self.verbose,
+                random_state=self.config.get("seed"),
+            )
 
-            if self.multi_target_strategy:
-                svm = SVC(C=C, kernel=kernels, probability=True, class_weight="balanced", verbose=self.verbose)
-                if self.multi_target_strategy == "one-vs-one":
-                    self.clf = OneVsOneClassifier(svm)
-                elif self.multi_target_strategy == "one-vs-rest":
-                    self.clf = OneVsRestClassifier(svm)
-                elif self.multi_target_strategy == "output-code":
-                    self.clf = OutputCodeClassifier(svm)
-                else:
-                    raise NotImplementedError("Choose either a `one-vs-one`, `one-vs-rest` or `output-code` model.")
+            # NOTE: consifer using multi_target_strategy "one-vs-one", "one-vs-rest", "output-code"
+            if self.multi_label:
+                self.svm = OneVsRestClassifier(self.svm)
+                param_addition = "estimator__"
+                cv_splits = None
             else:
-                C = self.config["C"]
-                kernels = self.config["kernels"]
-                tuned_parameters = [{"kernel": [str(k) for k in kernels]}]
+                param_addition = ""
                 folds = self.config["max_cross_validation_folds"]
                 cv_splits = max(2, min(folds, np.min(np.bincount(self.y)) // 5))
 
-                svm = SVC(C=C, probability=True, class_weight="balanced", verbose=self.verbose)
-                self.clf = GridSearchCV(
-                    svm,
-                    param_grid=tuned_parameters,
-                    n_jobs=1,
-                    cv=cv_splits,
-                    scoring="f1_weighted",
-                    verbose=self.verbose,
-                )
+            tuned_parameters = [
+                {
+                    f"{param_addition}{key}": value
+                    for key, value in self.config.items()
+                    if key not in ["random_state", "max_cross_validation_folds", "seed"]
+                }
+            ]
+
+            self.clf = GridSearchCV(
+                self.svm,
+                param_grid=tuned_parameters,
+                n_jobs=1,
+                cv=cv_splits,
+                scoring="f1_weighted",
+                verbose=self.verbose,
+            )
 
         elif len(self.label_list) == 1:
             raise NotImplementedError(
@@ -223,16 +208,16 @@ class classySkeletonFewShot(classySkeleton):
             labels += len(value) * [key]
             X += value
 
-        if self.multi_target_strategy:
+        if self.multi_label:
             df = pd.DataFrame(data={"X": X, "labels": labels})
             groups = df.groupby("X").agg(list).to_records().tolist()
             X = [group[0] for group in groups]
             labels = [group[1] for group in groups]
             self.le = preprocessing.MultiLabelBinarizer()
-            self.y = self.le.fit_transform(labels)
         else:
             self.le = preprocessing.LabelEncoder()
-            self.y = self.le.fit_transform(labels)
+
+        self.y = self.le.fit_transform(labels)
 
         self.X = self.get_embeddings(X)
 
@@ -240,67 +225,7 @@ class classySkeletonFewShot(classySkeleton):
             self.set_classification_model()
 
 
-class classySkeletonFewShotMultiLabel(classySkeleton):
-    def set_config(self, config: Union[dict, None] = None):
-        """
-        > This function sets the config attribute of the class to the config parameter if the config parameter is not None,
-        otherwise it sets the config attribute to a default value
-
-        :param config: A dictionary of parameters to be used in the SVM
-        :type config: Union[dict, None]
-        """
-        if config is None:
-            config = {"hidden_layer_sizes": (64,), "seed": None}
-        self.config = config
-
-    def set_classification_model(self, config: dict = None):
-        """Set and fit the Multi-layer Perceptron (MLP) classifier.
-
-        Args:
-            config (dict, optional): A config for MLPClassifier: hidden_layer_sizes, seed.
-        """
-        if config:  # update if overwritten
-            self.config = config
-
-        hidden_layer_sizes = self.config["hidden_layer_sizes"]
-        seed = self.config["seed"]
-        self.clf = MLPClassifier(hidden_layer_sizes=hidden_layer_sizes, random_state=seed, verbose=self.verbose)
-        self.clf.fit(self.X, self.y)
-
-    def proba_to_dict(self, pred_results: List[List]) -> List[dict]:
-        """
-        > It takes a list of lists of probabilities and returns a list of dictionaries where each dictionary has the label as
-        the key and the probability as the value
-
-        :param pred_results: List[List]
-        :type pred_results: List[List]
-        :return: A list of dictionaries.
-        """
-        pred_dict = []
-        for pred in pred_results:
-            pred_dict.append({label: value for label, value in zip(self.data.keys(), pred)})
-
-        return pred_dict
-
-    def set_training_data(self, data: dict = None):
-        """
-        The function takes in a dictionary of data, and sets the training data for the model
-
-        :param data: a dictionary of lists of strings. The keys are the labels, and the values are the samples
-        :type data: dict
-        """
-        if data:  # update if overwritten
-            self.data = data
-
-        if data:  # update if overwritten
-            self.set_classification_model()
-
-        X = np.unique([sample for values in self.data.values() for sample in values])
-        self.X = self.get_embeddings(X.tolist())
-        self.y = [[1 if sample in values else 0 for values in self.data.values()] for sample in X]
-
-
-class classyExternal:
+class ClassyExternal:
     def get_embeddings(self, docs: Union[List[Doc], List[str]]) -> List[List[float]]:
         """retrieve embeddings from the SentenceTransformer model for a text or list of texts
 
