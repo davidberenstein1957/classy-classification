@@ -140,6 +140,63 @@ print(nlp("I am looking for furniture and kitchen equipment.")._.cats)
 #
 # [{"label": "furniture", "score": 0.92}, {"label": "kitchen", "score": 0.91}]
 ```
+### Outlier detection
+Sometimes it is worth to be able to do outlier detection or binary classification. This can either be approached using
+a binary training dataset, however, I have also implemented support for a `OneClassSVM` for [outlier detection using a single label](https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html). Not that this method does not return probabilities, but that the data is formatted like label-score value pair to ensure uniformity.
+
+Approach 1:
+```python
+import spacy
+import classy_classification
+
+data_binary = {
+    "inlier": ["This text is about chairs.",
+               "Couches, benches and televisions.",
+               "I really need to get a new sofa."],
+    "outlier": ["Text about kitchen equipment",
+                "This text is about politics",
+                "Comments about AI and stuff."]
+}
+
+nlp = spacy.load("en_core_web_md")
+nlp.add_pipe(
+    "text_categorizer",
+    config={
+        "data": data_binary,
+    }
+)
+
+print(nlp("This text is a random text")._.cats)
+
+# Output:
+#
+# [{'inlier': 0.2926672385488411, 'outlier': 0.707332761451159}]
+```
+
+```python
+import spacy
+import classy_classification
+
+data_singular = {
+    "furniture": ["This text is about chairs.",
+               "Couches, benches and televisions.",
+               "I really need to get a new sofa.",
+               "We have a new dinner table."]
+}
+nlp = spacy.load("en_core_web_md")
+nlp.add_pipe(
+    "text_categorizer",
+    config={
+        "data": data_singular,
+    }
+)
+
+print(nlp("This text is a random text")._.cats)
+
+# Output:
+#
+# [{'furniture': 0, 'not_furniture': 1}]
+```
 ## Sentence-transfomer embeddings
 ```python
 import spacy

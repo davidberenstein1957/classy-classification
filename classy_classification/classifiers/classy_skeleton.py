@@ -6,7 +6,7 @@ import pandas as pd
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsRestClassifier
-from sklearn.svm import SVC
+from sklearn.svm import SVC, OneClassSVM
 from spacy.language import Language
 from spacy.tokens import Doc, Span
 
@@ -49,7 +49,7 @@ class ClassySkeleton:
                 }.
         """
         self.multi_label = multi_label
-        self.set_config(config)
+
         self.data = data
         self.name = name
         self.nlp = nlp
@@ -63,9 +63,14 @@ class ClassySkeleton:
         if include_doc:
             Doc.set_extension("cats", default=None, force=True)
         self.set_training_data()
+        self.set_config(config)
         self.set_classification_model()
 
     def set_training_data(self):
+        """Overwritten by super class"""
+        raise NotImplementedError("Needs to be overwritten by superclass")
+
+    def set_config(self):
         """Overwritten by super class"""
         raise NotImplementedError("Needs to be overwritten by superclass")
 
@@ -94,9 +99,16 @@ class ClassySkeleton:
         Returns:
             List[dict]: list of key-class proba-value dict
         """
-        pred_result = self.clf.predict_proba(embeddings)
-
-        return self.proba_to_dict(pred_result)
+        if len(self.label_list) > 1:
+            pred_result = self.clf.predict_proba(embeddings)
+            pred_result = self.proba_to_dict(pred_result)
+        else:
+            pred_result = self.clf.predict(embeddings)
+            label = self.label_list[0]
+            pred_result = [
+                {label: 1, f"not_{label}": 0} if pred == 1 else {label: 0, f"not_{label}": 1} for pred in pred_result
+            ]
+        return pred_result
 
 
 class ClassySkeletonFewShot(ClassySkeleton):
@@ -110,12 +122,18 @@ class ClassySkeletonFewShot(ClassySkeleton):
         """
 
         if config is None:
-            config = {
-                "C": [1, 2, 5, 10, 20, 100],
-                "kernel": ["linear", "rbf"],
-                "max_cross_validation_folds": 5,
-                "seed": None,
-            }
+            if len(self.label_list) > 1:
+                config = {
+                    "C": [1, 2, 5, 10, 20, 100],
+                    "kernel": ["linear", "rbf", "poly"],
+                    "max_cross_validation_folds": 5,
+                    "seed": None,
+                }
+            else:
+                config = {
+                    "nu": 0.1,
+                    "kernel": "rbf",
+                }
 
         self.config = config
 
@@ -163,17 +181,14 @@ class ClassySkeletonFewShot(ClassySkeleton):
                 scoring="f1_weighted",
                 verbose=self.verbose,
             )
-
+            self.clf.fit(self.X, self.y)
         elif len(self.label_list) == 1:
-            raise NotImplementedError(
-                "I have not managed to take an in-depth look into probabilistic predictions for single class"
-                " classification yet. Feel free to provide your input on"
-                " https://github.com/Pandora-Intelligence/classy-classification/issues/12."
-            )
+            if self.multi_label:
+                raise ValueError("Cannot apply one class classification with multiple-labels.")
+            self.clf = OneClassSVM(verbose=self.verbose, **self.config)
+            self.clf.fit(self.X)
         else:
             raise ValueError("Provide input data with Dict[key, List].")
-
-        self.clf.fit(self.X, self.y)
 
     def proba_to_dict(self, pred_results: List[List]) -> List[dict]:
         """converts probability prediciton to a formatted key-class proba-value list

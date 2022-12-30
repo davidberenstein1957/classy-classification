@@ -63,7 +63,7 @@ class ClassySentenceTransformer(ClassyStandalone, ClassySkeletonFewShot):
         self.model = model
         self.device = device
         self.verbose = verbose
-        self.set_config(config)
         self.set_embedding_model()
         self.set_training_data()
+        self.set_config(config)
         self.set_classification_model()
