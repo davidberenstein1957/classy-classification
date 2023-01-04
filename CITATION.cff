@@ -1,0 +1,8 @@
+cff-version: 1.0.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: David
+    given-names: Berenstein
+title: "Classy Classification - an easy and intuitive approach to few-shot classification using sentence-transformers or spaCy models, or zero-shot classification with Huggingface."
+version: 0.6.0
+date-released: 2022-12-31
