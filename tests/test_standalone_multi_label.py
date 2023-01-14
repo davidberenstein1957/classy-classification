@@ -1,12 +1,15 @@
 import pytest
 
 from classy_classification import ClassyClassifier
-from classy_classification.examples.data import training_data, validation_data
+from classy_classification.examples.data import (
+    training_data_multi_label,
+    validation_data,
+)
 
 
 @pytest.fixture
 def standalone_multi_label():
-    classifier = ClassyClassifier(data=training_data, multi_label=True)
+    classifier = ClassyClassifier(data=training_data_multi_label, multi_label=True)
     return classifier
 
 

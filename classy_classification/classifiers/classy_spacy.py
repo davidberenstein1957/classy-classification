@@ -1,5 +1,6 @@
 import importlib.util
 import pathlib
+import warnings
 from typing import List, Union
 
 import numpy as np
@@ -79,6 +80,11 @@ class ClassySpacyInternal(ClassySpacy):
         Returns:
             List[float]: a list of embeddings
         """
+        if not ((len(self.nlp.vocab.vectors)) or ("transformer" in self.nlp.component_names)):
+            raise NotImplementedError(
+                "internal spacy embeddings need to be derived from md/lg/trf spacy models not from sm models."
+            )
+
         if isinstance(docs, list):
             if isinstance(docs[0], str):
                 docs = self.nlp.pipe(docs, disable=["tagger", "parser", "attribute_ruler", "lemmatizer", "ner"])
@@ -91,14 +97,11 @@ class ClassySpacyInternal(ClassySpacy):
         for doc in docs:
             if doc.has_vector:
                 embeddings.append(doc.vector)
+            elif doc.has_extension("trf_data"):
+                embeddings.append(doc._.trf_data.model_output.pooler_output[0])
             else:
-                if doc.has_extension("trf_data"):
-                    embeddings.append(doc._.trf_data.model_output.pooler_output[0])
-                else:
-                    raise NotImplementedError(
-                        "internal spacy embeddings need to be derived from md/lg/trf spacy models not from sm models."
-                    )
-
+                warnings.warn(f"None of the words in the text `{str(doc)}` have vectors. Returning zeros.")
+                embeddings.append(np.zeros(self.nlp.vocab.vectors_length))
         return np.array(embeddings)
 
 

@@ -1,14 +1,18 @@
 import pytest
 import spacy
 
-from classy_classification.examples.data import training_data, validation_data
+from classy_classification.examples.data import (
+    training_data_multi_label,
+    validation_data,
+)
 
 
 @pytest.fixture(params=["en_core_web_md", "en_core_web_trf"])
 def spacy_internal_multi_label(request):
     nlp = spacy.load(request.param)
     nlp.add_pipe(
-        "text_categorizer", config={"data": training_data, "model": "spacy", "include_sent": True, "multi_label": True}
+        "text_categorizer",
+        config={"data": training_data_multi_label, "model": "spacy", "include_sent": True, "multi_label": True},
     )
     return nlp
 

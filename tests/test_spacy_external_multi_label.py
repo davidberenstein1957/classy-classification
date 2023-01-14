@@ -1,7 +1,10 @@
 import pytest
 import spacy
 
-from classy_classification.examples.data import training_data, validation_data
+from classy_classification.examples.data import (
+    training_data_multi_label,
+    validation_data,
+)
 
 
 @pytest.fixture
@@ -9,7 +12,7 @@ def spacy_external_multi_label():
     nlp = spacy.blank("en")
     nlp.add_pipe(
         "text_categorizer",
-        config={"data": training_data, "include_sent": True, "multi_label": True},
+        config={"data": training_data_multi_label, "include_sent": True, "multi_label": True},
     )
     return nlp
 

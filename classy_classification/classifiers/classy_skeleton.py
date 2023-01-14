@@ -176,7 +176,7 @@ class ClassySkeletonFewShot(ClassySkeleton):
             self.clf = GridSearchCV(
                 self.svm,
                 param_grid=tuned_parameters,
-                n_jobs=1,
+                n_jobs=-1,
                 cv=cv_splits,
                 scoring="f1_weighted",
                 verbose=self.verbose,
