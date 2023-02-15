@@ -124,8 +124,8 @@ class ClassySkeletonFewShot(ClassySkeleton):
         if config is None:
             if len(self.label_list) > 1:
                 config = {
-                    "C": [1, 2, 5, 10, 20, 100],
-                    "kernel": ["linear", "rbf", "poly"],
+                    "C": [1, 2, 5, 10, 20, 50, 100],
+                    "kernel": ["linear"],
                     "max_cross_validation_folds": 5,
                     "seed": None,
                 }
@@ -176,7 +176,6 @@ class ClassySkeletonFewShot(ClassySkeleton):
             self.clf = GridSearchCV(
                 self.svm,
                 param_grid=tuned_parameters,
-                n_jobs=-1,
                 cv=cv_splits,
                 scoring="f1_weighted",
                 verbose=self.verbose,
@@ -202,7 +201,7 @@ class ClassySkeletonFewShot(ClassySkeleton):
 
         pred_dict = []
         for pred in pred_results:
-            pred_dict.append({label: value for label, value in zip(self.le.classes_, pred)})
+            pred_dict.append({label: value for label, value in zip(self.label_list, pred)})
 
         return pred_dict
 
