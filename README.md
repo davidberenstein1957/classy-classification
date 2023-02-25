@@ -32,6 +32,8 @@ pip3 install onnx --no-use-pep517
 ```python
 import spacy
 import classy_classification
+# or import standalon
+from classy_classification import ClassyClassifier
 
 data = {
     "furniture": ["This text is about chairs.",
@@ -55,7 +57,7 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 
 # Output:
 #
-# [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
+# [{"furniture" : 0.21}, {"kitchen": 0.79}]
 ```
 ### Sentence level classification
 ```python
@@ -84,7 +86,7 @@ print(nlp("I am looking for kitchen appliances. And I love doing so.").sents[0].
 
 # Output:
 #
-# [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
+# [[{"furniture" : 0.21}, {"kitchen": 0.79}]
 ```
 ### Define random seed and verbosity
 ```python
@@ -138,7 +140,7 @@ print(nlp("I am looking for furniture and kitchen equipment.")._.cats)
 
 # Output:
 #
-# [{"label": "furniture", "score": 0.92}, {"label": "kitchen", "score": 0.91}]
+# [{"furniture": 0.92}, {"kitchen": 0.91}]
 ```
 ### Outlier detection
 Sometimes it is worth to be able to do outlier detection or binary classification. This can either be approached using
@@ -225,7 +227,7 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 
 # Output:
 #
-# [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
+# [{"furniture": 0.21}, {"kitchen": 0.79}]
 ```
 ## Hugginface zero-shot classifiers
 ```python
@@ -249,7 +251,7 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 
 # Output:
 #
-# [{"label": "furniture", "score": 0.21}, {"label": "kitchen", "score": 0.79}]
+# [{"furniture": 0.21}, {"kitchen": 0.79}]
 ```
 # Credits
 ## Inspiration Drawn From
