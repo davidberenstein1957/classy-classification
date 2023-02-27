@@ -1,3 +1,4 @@
+import collections
 import importlib.util
 from typing import List, Union
 
@@ -48,9 +49,11 @@ class ClassySkeleton:
                     "max_cross_validation_folds": 5
                 }.
         """
+
         self.multi_label = multi_label
 
-        self.data = data
+        self.data = collections.OrderedDict(sorted(data.items()))
+
         self.name = name
         self.nlp = nlp
         self.verbose = verbose
@@ -125,7 +128,7 @@ class ClassySkeletonFewShot(ClassySkeleton):
             if len(self.label_list) > 1:
                 config = {
                     "C": [1, 2, 5, 10, 20, 50, 100],
-                    "kernel": ["linear"],
+                    "kernel": ["linear", "rbf", "poly", "sigmoid"],
                     "max_cross_validation_folds": 5,
                     "seed": None,
                 }

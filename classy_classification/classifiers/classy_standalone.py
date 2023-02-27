@@ -1,3 +1,4 @@
+import collections
 from typing import List, Union
 
 from .classy_spacy import ClassyExternal, ClassySkeletonFewShot
@@ -59,7 +60,7 @@ class ClassySentenceTransformer(ClassyStandalone, ClassySkeletonFewShot):
                 }.
         """
         self.multi_label = multi_label
-        self.data = data
+        self.data = collections.OrderedDict(sorted(data.items()))
         self.model = model
         self.device = device
         self.verbose = verbose

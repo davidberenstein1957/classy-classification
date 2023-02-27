@@ -31,6 +31,7 @@ sentence-transformers = "^2.0"
 scikit-learn = "^1.0"
 pandas = "^1.4"
 fast-sentence-transformers = { version = "^0.4.1", optional = true }
+InstructorEmbedding = "^1.0.0"
 
 [tool.poetry.extras]
 onnx = ["fast-sentence-transformers"]
