@@ -1,5 +1,5 @@
 # Classy Classification
-Have you every struggled with needing a [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) but didn't have the time to train one from scratch? Classy Classification is the way to go! For few-shot classification using [sentence-transformers](https://github.com/UKPLab/sentence-transformers) or [spaCy models](https://spacy.io/usage/models), provide a dictionary with labels and examples, or just provide a list of labels for zero shot-classification with [Hugginface zero-shot classifiers](https://huggingface.co/models?pipeline_tag=zero-shot-classification).
+Have you ever struggled with needing a [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) but didn't have the time to train one from scratch? Classy Classification is the way to go! For few-shot classification using [sentence-transformers](https://github.com/UKPLab/sentence-transformers) or [spaCy models](https://spacy.io/usage/models), provide a dictionary with labels and examples, or just provide a list of labels for zero shot-classification with [Hugginface zero-shot classifiers](https://huggingface.co/models?pipeline_tag=zero-shot-classification).
 
 [![Current Release Version](https://img.shields.io/github/release/pandora-intelligence/classy-classification.svg?style=flat-square&logo=github)](https://github.com/pandora-intelligence/classy-classification/releases)
 [![pypi Version](https://img.shields.io/pypi/v/classy-classification.svg?style=flat-square&logo=pypi&logoColor=white)](https://pypi.org/project/classy-classification/)
@@ -9,7 +9,7 @@ Have you every struggled with needing a [Spacy TextCategorizer](https://spacy.io
 # Install
 ``` pip install classy-classification```
 
-or install with faster inference using onnx.
+Or, install with faster inference using ONNX.
 
 ``` pip install classy-classification[onnx]```
 
@@ -19,6 +19,7 @@ or install with faster inference using onnx.
 
 ONNX does show some issues when pickling the data.
 ### M1
+
 Some [installation issues](https://github.com/onnx/onnx/issues/3129) might occur, which can be fixed by these commands.
 
 ```

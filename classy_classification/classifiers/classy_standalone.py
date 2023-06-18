@@ -60,7 +60,10 @@ class ClassySentenceTransformer(ClassyStandalone, ClassySkeletonFewShot):
                 }.
         """
         self.multi_label = multi_label
-        self.data = collections.OrderedDict(sorted(data.items()))
+        if isinstance(data, dict):
+            self.data = collections.OrderedDict(sorted(data.items()))
+        elif isinstance(data, list):  # in case of zero-shot classification
+            self.data = data
         self.model = model
         self.device = device
         self.verbose = verbose
