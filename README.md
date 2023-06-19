@@ -12,8 +12,11 @@ Have you ever struggled with needing a [Spacy TextCategorizer](https://spacy.io/
 Or, install with faster inference using ONNX.
 
 ``` pip install classy-classification[onnx]```
+## SetFit support
 
+I got a lot of requests for SetFit support, but I decided to create a [separate package](https://github.com/davidberenstein1957/spacy-setfit) for this. Feel free to check it out. ❤️
 ## ONNX issues
+
 
 ### pickling
 
