@@ -1,5 +1,4 @@
 import importlib.util
-import pathlib
 import warnings
 from typing import List, Union
 
@@ -100,7 +99,9 @@ class ClassySpacyInternal(ClassySpacy):
             elif doc.has_extension("trf_data"):
                 embeddings.append(doc._.trf_data.model_output.pooler_output[0])
             else:
-                warnings.warn(f"None of the words in the text `{str(doc)}` have vectors. Returning zeros.")
+                warnings.warn(
+                    f"None of the words in the text `{str(doc)}` have vectors. Returning zeros.", stacklevel=1
+                )
                 embeddings.append(np.zeros(self.nlp.vocab.vectors_length))
         return np.array(embeddings)
 
@@ -153,30 +154,26 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
         if device:
             self.device = device
 
-        if importlib.util.find_spec("fast-sentence-transformers") is None:
+        try:
+            from optimum.pipelines import pipeline
+
+            if self.device in ["gpu", "cuda", 0]:
+                self.device = 0
+            else:
+                self.device = -1
+
+            self.pipeline = pipeline(
+                "zero-shot-classification", model=model, device=self.device, top_k=None, accelerator="ort"
+            )
+        except ImportError:
             from transformers import pipeline
 
             if self.device in ["gpu", "cuda", 0]:
                 self.device = 0
             else:
                 self.device = -1
+
             self.pipeline = pipeline("zero-shot-classification", model=self.model, device=self.device, top_k=None)
-        else:
-            from fast_sentence_transformers.txtai import HFOnnx
-            from fast_sentence_transformers.txtai.text import Labels
-
-            # Export model to ONNX
-            p = pathlib.Path(self.model)
-            if p.parent:
-                p.parent.mkdir(parents=True, exist_ok=True)
-            onnx = HFOnnx()
-            onnx_model = onnx(self.model, "text-classification", f"{self.model}.onnx", quantize=False)
-
-            # Run inference and validate
-            if self.device in ["gpu", "cuda", 0]:
-                self.pipeline = Labels((onnx_model, self.model), dynamic=True, gpu=True)
-            else:
-                self.pipeline = Labels((onnx_model, self.model), dynamic=True)
 
     def set_config(self, _: dict = None):
         """Zero-shot models don't require a config"""
