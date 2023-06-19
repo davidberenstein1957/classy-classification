@@ -32,9 +32,8 @@ pip3 install onnx --no-use-pep517
 ## SpaCy embeddings
 ```python
 import spacy
-import classy_classification
-# or import standalon
-from classy_classification import ClassyClassifier
+# or import standalone
+# from classy_classification import ClassyClassifier
 
 data = {
     "furniture": ["This text is about chairs.",
@@ -63,7 +62,6 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 ### Sentence level classification
 ```python
 import spacy
-import classy_classification
 
 data = {
     "furniture": ["This text is about chairs.",
@@ -106,7 +104,6 @@ Sometimes multiple labels are necessary to fully describe the contents of a text
 
 ```python
 import spacy
-import classy_classification
 
 data = {
     "furniture": ["This text is about chairs.",
@@ -150,7 +147,6 @@ a binary training dataset, however, I have also implemented support for a `OneCl
 Approach 1:
 ```python
 import spacy
-import classy_classification
 
 data_binary = {
     "inlier": ["This text is about chairs.",
@@ -178,7 +174,6 @@ print(nlp("This text is a random text")._.cats)
 Approach 2:
 ```python
 import spacy
-import classy_classification
 
 data_singular = {
     "furniture": ["This text is about chairs.",
@@ -203,7 +198,6 @@ print(nlp("This text is a random text")._.cats)
 ## Sentence-transfomer embeddings
 ```python
 import spacy
-import classy_classification
 
 data = {
     "furniture": ["This text is about chairs.",
@@ -233,7 +227,6 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 ## Hugginface zero-shot classifiers
 ```python
 import spacy
-import classy_classification
 
 data = ["furniture", "kitchen"]
 

@@ -38,7 +38,7 @@ def make_text_categorizer(
     nlp: Language,
     name: str,
     data: Union[dict, list],
-    device: str,
+    device: str = "cpu",
     config: dict = None,
     model: str = None,
     cat_type: str = "few",
