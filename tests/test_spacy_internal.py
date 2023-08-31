@@ -10,7 +10,7 @@ from classy_classification.examples.data import training_data, validation_data
 def spacy_internal(request):
     nlp = spacy.load(request.param)
     nlp.add_pipe(
-        "text_categorizer",
+        "classy_classification",
         config={
             "data": training_data,
             "model": "spacy",
@@ -37,7 +37,7 @@ def test_spacy_internal(spacy_internal):
 # def spacy_internal_trf():
 #     nlp = spacy.load("en_core_web_trf")
 #     nlp.add_pipe(
-#         "text_categorizer",
+#         "classy_classification",
 #         config={
 #             "data": training_data,
 #             "model": "spacy",

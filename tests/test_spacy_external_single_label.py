@@ -8,7 +8,7 @@ from classy_classification.examples.data import training_data_single_class
 def spacy_external_single_label():
     nlp = spacy.blank("en")
     nlp.add_pipe(
-        "text_categorizer",
+        "classy_classification",
         config={"data": training_data_single_class},
     )
     return nlp

@@ -10,7 +10,7 @@ from classy_classification.examples.data import training_data, validation_data
 def spacy_external():
     nlp = spacy.blank("en")
     nlp.add_pipe(
-        "text_categorizer",
+        "classy_classification",
         config={
             "data": training_data,
             "include_sent": True,

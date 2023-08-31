@@ -11,7 +11,7 @@ from classy_classification.examples.data import (
 def spacy_internal_multi_label(request):
     nlp = spacy.load(request.param)
     nlp.add_pipe(
-        "text_categorizer",
+        "classy_classification",
         config={"data": training_data_multi_label, "model": "spacy", "include_sent": True, "multi_label": True},
     )
     return nlp

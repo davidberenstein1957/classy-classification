@@ -97,6 +97,7 @@ class ClassySpacyInternal(ClassySpacy):
             if doc.has_vector:
                 embeddings.append(doc.vector)
             elif doc.has_extension("trf_data"):
+                print(doc)
                 embeddings.append(doc._.trf_data.model_output.pooler_output[0])
             else:
                 warnings.warn(

@@ -21,7 +21,7 @@ logging.captureWarnings(True)
 
 
 @Language.factory(
-    "text_categorizer",
+    "classy_classification",
     default_config={
         "data": None,
         "model": None,

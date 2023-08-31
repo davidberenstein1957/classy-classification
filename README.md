@@ -49,7 +49,7 @@ data = {
 
 nlp = spacy.load("en_core_web_trf")
 nlp.add_pipe(
-    "text_categorizer",
+    "classy_classification",
     config={
         "data": data,
         "model": "spacy"
@@ -76,7 +76,7 @@ data = {
 }
 
 nlp.add_pipe(
-    "text_categorizer",
+    "classy_classification",
     config={
         "data": data,
         "model": "spacy",
@@ -94,7 +94,7 @@ print(nlp("I am looking for kitchen appliances. And I love doing so.").sents[0].
 ```python
 
 nlp.add_pipe(
-    "text_categorizer",
+    "classy_classification",
     config={
         "data": data,
         "verbose": True,
@@ -129,7 +129,7 @@ data = {
 
 nlp = spacy.load("en_core_web_md")
 nlp.add_pipe(
-    "text_categorizer",
+    "classy_classification",
     config={
         "data": data,
         "model": "spacy",
@@ -162,7 +162,7 @@ data_binary = {
 
 nlp = spacy.load("en_core_web_md")
 nlp.add_pipe(
-    "text_categorizer",
+    "classy_classification",
     config={
         "data": data_binary,
     }
@@ -186,7 +186,7 @@ data_singular = {
 }
 nlp = spacy.load("en_core_web_md")
 nlp.add_pipe(
-    "text_categorizer",
+    "classy_classification",
     config={
         "data": data_singular,
     }
@@ -213,7 +213,7 @@ data = {
 
 nlp = spacy.blank("en")
 nlp.add_pipe(
-    "text_categorizer",
+    "classy_classification",
     config={
         "data": data,
         "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
@@ -235,7 +235,7 @@ data = ["furniture", "kitchen"]
 
 nlp = spacy.blank("en")
 nlp.add_pipe(
-    "text_categorizer",
+    "classy_classification",
     config={
         "data": data,
         "model": "typeform/distilbert-base-uncased-mnli",
