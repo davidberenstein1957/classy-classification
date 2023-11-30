@@ -6,5 +6,5 @@
         119
     ],
     "python.linting.enabled": true,
-    "files.eol": "\r\n"
+    "files.eol": "\n"
 }

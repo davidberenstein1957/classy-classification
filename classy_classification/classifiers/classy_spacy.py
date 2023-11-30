@@ -29,13 +29,13 @@ class ClassySpacy:
 
         if doc.has_extension("trf_data"):
             disable = [comp[0] for comp in self.nlp.components if comp[0] != "transformer"]
-            texts = [span.text for span in doc.spans[group] for group in span_groups]
-            span_docs = self.nlp.pipe(span, disable=disable)
+            texts = [span.text for span in doc.spans[group] for group in span_groups]  # noqa
+            span_docs = self.nlp.pipe(texts, disable=disable)
         else:
-            span_docs = [span.as_doc() for span in doc.spans for group in span_groups]
+            span_docs = [span.as_doc() for span in doc.spans[group] for group in span_groups]  # noqa
         inferred_span_docs = self.pipe(iter(span_docs), include_span=False)
-        for span_doc, sent in zip(inferred_span_docs, doc.spans):
-            span_doc._.cats = span_doc._.cats
+        for span_doc, span in zip(inferred_span_docs, doc.spans):
+            span._.cats = span_doc._.cats
 
     def __call__(self, doc: Doc):
         """

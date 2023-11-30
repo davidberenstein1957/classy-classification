@@ -32,7 +32,7 @@ logging.captureWarnings(True)
         "include_doc": True,
         "include_sent": False,
         "include_span": False,
-        "include_span_groups": [],
+        "include_span_groups": None,
         "verbose": False,
     },
 )
@@ -48,7 +48,7 @@ def make_text_categorizer(
     include_doc: bool = True,
     include_sent: bool = False,
     include_span: bool = False,
-    include_span_groups: list = [],
+    include_span_groups: list = None,
     verbose: bool = False,
 ):
     if model == "spacy" and cat_type == "zero":

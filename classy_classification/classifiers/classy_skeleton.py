@@ -29,7 +29,7 @@ class ClassySkeleton:
         include_doc: bool = True,
         include_sent: bool = False,
         include_span: bool = False,
-        include_span_groups: list = [],
+        include_span_groups: list = None,
         multi_label: bool = False,
         config: Union[dict, None] = None,
         verbose: bool = True,
@@ -65,6 +65,8 @@ class ClassySkeleton:
         self.include_doc = include_doc
         self.include_sent = include_sent
         self.include_span = include_span
+        if not include_span_groups:
+            include_span_groups = []
         self.include_span_groups = include_span_groups
         if include_sent or include_span:
             Span.set_extension("cats", default=None, force=True)
