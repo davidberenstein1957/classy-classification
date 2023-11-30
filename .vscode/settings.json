@@ -2,7 +2,9 @@
     "python.testing.pytestEnabled": true,
     "python.linting.flake8Enabled": true,
     "python.formatting.provider": "black",
-    "editor.rulers": [119],
+    "editor.rulers": [
+        119
+    ],
     "python.linting.enabled": true,
-    "files.eol": "\n"
+    "files.eol": "\r\n"
 }
