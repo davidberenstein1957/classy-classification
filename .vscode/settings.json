@@ -4,4 +4,5 @@
     "python.formatting.provider": "black",
     "editor.rulers": [119],
     "python.linting.enabled": true,
+    "files.eol": "\n"
 }
