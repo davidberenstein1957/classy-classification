@@ -22,7 +22,11 @@ class ClassySpacy:
             sent._.cats = sent_doc._.cats
 
     def span_pipe(self, doc: Doc):
-        span_groups = doc.spans.keys()
+        if self.include_span_groups:
+            span_groups = self.include_span_groups
+        else:
+            span_groups = doc.spans.keys()
+
         if doc.has_extension("trf_data"):
             disable = [comp[0] for comp in self.nlp.components if comp[0] != "transformer"]
             texts = [span.text for span in doc.spans[group] for group in span_groups]
@@ -50,7 +54,7 @@ class ClassySpacy:
         if self.include_sent:
             self.sentence_pipe(doc)
 
-        if self.include_span:
+        if self.include_span or len(self.include_span_groups) > 0:
             self.span_pipe(doc)
 
         return doc
