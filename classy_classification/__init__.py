@@ -31,6 +31,8 @@ logging.captureWarnings(True)
         "multi_label": False,
         "include_doc": True,
         "include_sent": False,
+        "include_span": False,
+        "include_span_groups": [],
         "verbose": False,
     },
 )
@@ -45,6 +47,8 @@ def make_text_categorizer(
     multi_label: bool = False,
     include_doc: bool = True,
     include_sent: bool = False,
+    include_span: bool = False,
+    include_span_groups: list = [],
     verbose: bool = False,
 ):
     if model == "spacy" and cat_type == "zero":
@@ -57,6 +61,8 @@ def make_text_categorizer(
             config=config,
             include_doc=include_doc,
             include_sent=include_sent,
+            include_span=include_span,
+            include_span_groups=include_span_groups,
             multi_label=multi_label,
             verbose=verbose,
         )
@@ -70,6 +76,8 @@ def make_text_categorizer(
             model=model,
             include_doc=include_doc,
             include_sent=include_sent,
+            include_span=include_span,
+            include_span_groups=include_span_groups,
             multi_label=multi_label,
             verbose=verbose,
         )
@@ -83,6 +91,8 @@ def make_text_categorizer(
             config=config,
             include_doc=include_doc,
             include_sent=include_sent,
+            include_span=include_span,
+            include_span_groups=include_span_groups,
             multi_label=multi_label,
             verbose=verbose,
         )

@@ -28,6 +28,8 @@ class ClassySkeleton:
         data: dict,
         include_doc: bool = True,
         include_sent: bool = False,
+        include_span: bool = False,
+        include_span_groups: list = [],
         multi_label: bool = False,
         config: Union[dict, None] = None,
         verbose: bool = True,
@@ -62,10 +64,13 @@ class ClassySkeleton:
         self.verbose = verbose
         self.include_doc = include_doc
         self.include_sent = include_sent
-        if include_sent:
+        self.include_span = include_span
+        self.include_span_groups = include_span_groups
+        if include_sent or include_span:
             Span.set_extension("cats", default=None, force=True)
-            if "sentencizer" not in nlp.pipe_names:
-                nlp.add_pipe("sentencizer")
+            if include_sent:
+                if "sentencizer" not in nlp.pipe_names:
+                    nlp.add_pipe("sentencizer")
         if include_doc:
             Doc.set_extension("cats", default=None, force=True)
         self.set_training_data()

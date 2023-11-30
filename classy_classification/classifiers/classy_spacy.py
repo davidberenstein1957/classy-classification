@@ -21,6 +21,18 @@ class ClassySpacy:
         for sent_doc, sent in zip(inferred_sent_docs, doc.sents):
             sent._.cats = sent_doc._.cats
 
+    def span_pipe(self, doc: Doc):
+        span_groups = doc.spans.keys()
+        if doc.has_extension("trf_data"):
+            disable = [comp[0] for comp in self.nlp.components if comp[0] != "transformer"]
+            texts = [span.text for span in doc.spans[group] for group in span_groups]
+            span_docs = self.nlp.pipe(span, disable=disable)
+        else:
+            span_docs = [span.as_doc() for span in doc.spans for group in span_groups]
+        inferred_span_docs = self.pipe(iter(span_docs), include_span=False)
+        for span_doc, sent in zip(inferred_span_docs, doc.spans):
+            span_doc._.cats = span_doc._.cats
+
     def __call__(self, doc: Doc):
         """
         It takes a doc, gets the embeddings from the doc, reshapes the embeddings, gets the prediction from the embeddings,
@@ -38,9 +50,12 @@ class ClassySpacy:
         if self.include_sent:
             self.sentence_pipe(doc)
 
+        if self.include_span:
+            self.span_pipe(doc)
+
         return doc
 
-    def pipe(self, stream, batch_size=128, include_sent=None):
+    def pipe(self, stream, batch_size=128, include_sent=None, include_span=False):
         """
         predict the class for a spacy Doc stream
 
@@ -63,7 +78,8 @@ class ClassySpacy:
                     doc._.cats = pred_result
                 if include_sent:
                     self.sentence_pipe(doc)
-
+                if include_span:
+                    self.span_pipe(doc)
                 yield doc
 
 
@@ -234,10 +250,12 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
             doc._.cats = self.format_prediction(pred_result)
         if self.include_sent:
             self.sentence_pipe(doc)
+        if self.include_span:
+            self.span_pipe(doc)
 
         return doc
 
-    def pipe(self, stream, batch_size=128, include_sent=None):
+    def pipe(self, stream, batch_size=128, include_sent=None, include_span=False):
         """
         predict the class for a spacy Doc stream
 
@@ -259,5 +277,6 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
                     doc._.cats = pred_result
                 if include_sent:
                     self.sentence_pipe(doc)
-
+                if include_span:
+                    self.span_pipe(doc)
                 yield doc
