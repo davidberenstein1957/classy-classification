@@ -29,6 +29,7 @@ class ClassySkeleton:
         include_doc: bool = True,
         include_sent: bool = False,
         include_spans: bool = False,
+        include_ents: bool = True,
         include_spans_groups: list = None,
         multi_label: bool = False,
         config: Union[dict, None] = None,
@@ -64,6 +65,7 @@ class ClassySkeleton:
         self.verbose = verbose
         self.include_doc = include_doc
         self.include_sent = include_sent
+        self.include_ents = include_ents
         self.include_spans = include_spans
         if not include_spans_groups:
             include_spans_groups = []

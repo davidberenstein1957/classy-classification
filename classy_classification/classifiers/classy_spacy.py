@@ -37,6 +37,17 @@ class ClassySpacy:
         for span_doc, span in zip(inferred_span_docs, doc.spans):
             span._.cats = span_doc._.cats
 
+    def entity_pipe(self, doc: Doc):
+        if doc.has_extension("trf_data"):
+            disable = [comp[0] for comp in self.nlp.components if comp[0] != "transformer"]
+            texts = [span.text for span in doc.ents]
+            span_docs = self.nlp.pipe(texts, disable=disable)
+        else:
+            span_docs = [span.as_doc() for span in doc.ents]
+        inferred_span_docs = self.pipe(iter(span_docs), include_spans=False)
+        for span_doc, span in zip(inferred_span_docs, doc.ents):
+            span._.cats = span_doc._.cats
+
     def __call__(self, doc: Doc):
         """
         It takes a doc, gets the embeddings from the doc, reshapes the embeddings, gets the prediction from the embeddings,
@@ -56,6 +67,9 @@ class ClassySpacy:
 
         if self.include_spans or len(self.include_spans_groups) > 0:
             self.span_pipe(doc)
+
+        if self.include_ents:
+            self.entity_pipe(doc)
 
         return doc
 
@@ -256,10 +270,11 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
             self.sentence_pipe(doc)
         if self.include_spans:
             self.span_pipe(doc)
-
+        if self.include_ents:
+            self.entity_pipe(doc)
         return doc
 
-    def pipe(self, stream, batch_size=128, include_sent=None, include_spans=False):
+    def pipe(self, stream, batch_size=128, include_sent=False, include_spans=False, include_ents=False):
         """
         predict the class for a spacy Doc stream
 
@@ -269,8 +284,6 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
         Returns:
             Doc: spacy doc with ._.cats key-class proba-value dict
         """
-        if include_sent is None:
-            include_sent = self.include_sent
         for docs in util.minibatch(stream, size=batch_size):
             predictions = [doc.text for doc in docs]
             if self.include_doc:
@@ -283,4 +296,6 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
                     self.sentence_pipe(doc)
                 if include_spans:
                     self.span_pipe(doc)
+                if include_ents:
+                    self.entity_pipe(doc)
                 yield doc
