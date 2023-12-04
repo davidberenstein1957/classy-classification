@@ -274,7 +274,7 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
             self.entity_pipe(doc)
         return doc
 
-    def pipe(self, stream, batch_size=128, include_sent=False, include_spans=False, include_ents=False):
+    def pipe(self, stream, batch_size=128, include_sent=None, include_spans=None, include_ents=None):
         """
         predict the class for a spacy Doc stream
 
@@ -284,6 +284,10 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
         Returns:
             Doc: spacy doc with ._.cats key-class proba-value dict
         """
+        include_sent = self.include_sent if not include_sent else include_sent
+        include_spans = self.include_spans if not include_spans else include_spans
+        include_ents = self.include_ents if not include_ents else include_ents
+
         for docs in util.minibatch(stream, size=batch_size):
             predictions = [doc.text for doc in docs]
             if self.include_doc:
