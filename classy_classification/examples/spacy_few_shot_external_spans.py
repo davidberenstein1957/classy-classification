@@ -22,7 +22,6 @@ nlp.add_pipe(
 )
 
 
-docs = nlp.pipe(validation_data_spans)
-for doc in docs:
+for doc in nlp.pipe(validation_data_spans):
     print(doc.spans)
     print([span._.cats for span in doc.spans])
