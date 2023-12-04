@@ -44,9 +44,9 @@ class ClassySpacy:
             span_docs = self.nlp.pipe(texts, disable=disable)
         else:
             span_docs = [span.as_doc() for span in doc.ents]
-        inferred_span_docs = self.pipe(iter(span_docs), include_spans=False)
-        for span_doc, span in zip(inferred_span_docs, doc.ents):
-            span._.cats = span_doc._.cats
+        inferred_span_docs = self.pipe(iter(span_docs), include_ents=False)
+        for ent_doc, ent in zip(inferred_span_docs, doc.ents):
+            ent._.cats = ent_doc._.cats
 
     def __call__(self, doc: Doc):
         """
@@ -284,9 +284,9 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
         Returns:
             Doc: spacy doc with ._.cats key-class proba-value dict
         """
-        include_sent = self.include_sent if not include_sent else include_sent
-        include_spans = self.include_spans if not include_spans else include_spans
-        include_ents = self.include_ents if not include_ents else include_ents
+        include_sent = include_sent if include_sent is not None else self.include_sent
+        include_ents = include_ents if include_ents is not None else self.include_ents
+        include_spans = include_spans if include_spans is not None else self.include_spans
 
         for docs in util.minibatch(stream, size=batch_size):
             predictions = [doc.text for doc in docs]
