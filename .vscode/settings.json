@@ -1,10 +1,10 @@
 {
     "python.testing.pytestEnabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.formatting.provider": "black",
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+      },
     "editor.rulers": [
         119
     ],
-    "python.linting.enabled": true,
     "files.eol": "\n"
 }
