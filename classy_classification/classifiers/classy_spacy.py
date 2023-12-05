@@ -27,15 +27,21 @@ class ClassySpacy:
         else:
             span_groups = doc.spans.keys()
 
+        span_docs = []
+        all_spans = []
         if doc.has_extension("trf_data"):
             disable = [comp[0] for comp in self.nlp.components if comp[0] != "transformer"]
-            texts = [span.text for span in doc.spans[group] for group in span_groups]  # noqa
-            span_docs = self.nlp.pipe(texts, disable=disable)
+            for group in span_groups:
+                all_spans.extend([span for span in doc.spans[group]])
+                texts = [span.text for span in doc.spans[group]]
+                span_docs.extend(list(self.nlp.pipe(texts, disable=disable)))
         else:
-            span_docs = [span.as_doc() for span in doc.spans[group] for group in span_groups]  # noqa
+            for group in span_groups:
+                all_spans.extend([span for span in doc.spans[group]])
+                span_docs.extend([span.as_doc() for span in doc.spans[group]])
         inferred_span_docs = self.pipe(iter(span_docs), include_spans=False)
-        for span_doc, span in zip(inferred_span_docs, doc.spans):
-            span._.cats = span_doc._.cats
+        for idx, span_doc in enumerate(inferred_span_docs):
+            all_spans[idx]._.cats = span_doc._.cats
 
     def entity_pipe(self, doc: Doc):
         if doc.has_extension("trf_data"):

@@ -3,7 +3,7 @@ from classy_classification.examples.data import training_data_spans, validation_
 import classy_classification  # noqa: F401
 
 
-nlp = spacy.blank("en")
+nlp = spacy.load("en_core_web_md")
 
 # Create a SpanRuler with a pattern for the word "weather" and its two preceding/succeeding tokens
 span_ruler = nlp.add_pipe("span_ruler")
@@ -15,13 +15,13 @@ nlp.add_pipe(
     "classy_classification",
     config={
         "data": training_data_spans,
-        "include_doc": False,
+        "include_doc": True,
         "include_spans": True,
-        "model": "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2",
+        "model": "spacy",
     },
 )
 
-
+dc = nlp(validation_data_spans[0])
 for doc in nlp.pipe(validation_data_spans):
-    print(doc.spans)
-    print([span._.cats for span in doc.spans])
+    print(doc.spans["ruler"])
+    print([span._.cats for span in doc.spans["ruler"]])
