@@ -24,4 +24,5 @@ nlp.add_pipe(
 dc = nlp(validation_data_spans[0])
 for doc in nlp.pipe(validation_data_spans):
     print(doc.spans["ruler"])
-    print([span._.cats for span in doc.spans["ruler"]])
+    for span in doc.spans["ruler"]:
+        print(span._.cats)

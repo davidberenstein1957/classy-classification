@@ -70,7 +70,7 @@ class ClassySkeleton:
         if not include_spans_groups:
             include_spans_groups = []
         self.include_spans_groups = include_spans_groups
-        if include_sent or include_spans:
+        if include_sent or include_spans or include_ents or include_spans_groups != []:
             Span.set_extension("cats", default=None, force=True)
             if include_sent:
                 if "sentencizer" not in nlp.pipe_names:
