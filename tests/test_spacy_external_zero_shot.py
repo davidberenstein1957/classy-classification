@@ -15,12 +15,14 @@ def spacy_external_zer_shot():
     return nlp
 
 
-def test_spacy_external_zer_shot(spacy_external_zer_shot):
+def test_spacy_external_zero_shot(spacy_external_zer_shot):
     doc = spacy_external_zer_shot(validation_data[0])
     assert isclose(sum(doc._.cats.values()), 1, abs_tol=0.05)
     for sent in doc.sents:
         assert isclose(sum(sent._.cats.values()), 1, abs_tol=0.05)
 
+
+def test_spacy_external_zero_shot_bulk(spacy_external_zer_shot):
     docs = spacy_external_zer_shot.pipe(validation_data)
     for doc in docs:
         assert isclose(sum(doc._.cats.values()), 1, abs_tol=0.05)

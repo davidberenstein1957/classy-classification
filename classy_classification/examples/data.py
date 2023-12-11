@@ -56,3 +56,23 @@ validation_data = [
     "Sports is all you need.",
     "The weather is amazing and sunny and cloudy.",
 ]
+
+training_data_spans = {
+    "good_weather": [
+        "Sunny day, perfect for outdoor fun!",
+        "Mild temps, great for a leisurely stroll.",
+        "Clear skies, ideal for a picnic.",
+        "Refreshing drizzle, a calm start.",
+        "Beautiful sunset against a clear sky.",
+    ],
+    "bad_weather": [
+        "Scorching heat, feels like an oven.",
+        "Heavy rain, causing flooding.",
+        "Thick fog, dangerous for driving.",
+        "Freezing temps, strong winds.",
+        "Poor air quality, limit outdoor activities.",
+    ],
+}
+
+
+validation_data_spans = ["The weather is amazing and sunny and cloudy.", "This is bad weather and low temperatures."]
