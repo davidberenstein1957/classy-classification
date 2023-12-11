@@ -25,7 +25,7 @@ class ClassySpacy:
         if self.include_spans_groups:
             span_groups = self.include_spans_groups
         else:
-            span_groups = doc.spans.keys()
+            span_groups = doc.spans.data.keys()
 
         span_docs = []
         all_spans = []
@@ -41,7 +41,7 @@ class ClassySpacy:
                 span_docs.extend([span.as_doc() for span in doc.spans[group]])
         inferred_span_docs = self.pipe(iter(span_docs), include_spans=False)
         for idx, span_doc in enumerate(inferred_span_docs):
-            all_spans[idx]._.cats = span_doc._.cats
+            all_spans[idx]._.cats = dict(span_doc._.cats)
 
     def entity_pipe(self, doc: Doc):
         if doc.has_extension("trf_data"):
@@ -79,7 +79,7 @@ class ClassySpacy:
 
         return doc
 
-    def pipe(self, stream, batch_size=128, include_sent=None, include_spans=False):
+    def pipe(self, stream, batch_size=128, include_sent=None, include_spans=None, include_ents=None):
         """
         predict the class for a spacy Doc stream
 
@@ -91,6 +91,8 @@ class ClassySpacy:
         """
         if include_sent is None:
             include_sent = self.include_sent
+        include_ents = include_ents if include_ents is not None else self.include_ents
+        include_spans = include_spans if include_spans is not None else self.include_spans
         for docs in util.minibatch(stream, size=batch_size):
             embeddings = self.get_embeddings(docs)
             pred_results = [] * len(embeddings)

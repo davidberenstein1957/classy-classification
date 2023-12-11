@@ -1,6 +1,5 @@
 import spacy
 from classy_classification.examples.data import training_data_spans, validation_data_spans
-import classy_classification  # noqa: F401
 
 
 nlp = spacy.load("en_core_web_md")
@@ -22,7 +21,8 @@ nlp.add_pipe(
 )
 
 dc = nlp(validation_data_spans[0])
+print(dc.spans["ruler"][0]._.cats)
+
 for doc in nlp.pipe(validation_data_spans):
-    print(doc.spans["ruler"])
     for span in doc.spans["ruler"]:
         print(span._.cats)
