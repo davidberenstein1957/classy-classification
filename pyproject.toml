@@ -34,6 +34,7 @@ scikit-learn = ">1,<2"
 pandas = ">=1,<2"
 transformers = {extras = ["torch"], version = ">4.20,<5"}
 terminado = "<0.18"
+numpy = "<1.23"
 
 [tool.poetry.plugins."spacy_factories"]
 "spacy" = "classy_classification.__init__:make_text_categorizer"
