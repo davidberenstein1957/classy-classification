@@ -27,7 +27,7 @@ packages = [{include = "classy_classification"}]
 
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.13"
+python = ">=3.8,<3.12"
 spacy = {extras = ["transformers"], version = "^3.0"}
 sentence-transformers = "^2.0"
 scikit-learn = "^1.0"
