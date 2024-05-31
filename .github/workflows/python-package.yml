@@ -26,9 +26,9 @@ jobs:
       - name: Install dependencies
         run: |
           sudo pip install -U setuptools
+          python -m pip install --upgrade pip
           python -m ensurepip --upgrade
           python -m pip install --upgrade setuptools
-          python -m pip install --upgrade pip
           python -m pip install flake8 pytest pytest-cov
           python -m pip install poetry
           poetry export -f requirements.txt -o requirements.txt --without-hashes
