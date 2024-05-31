@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "classy-classification"
-version = "0.6.7"
+version = "1.0.0"
 description = "Have you every struggled with needing a Spacy TextCategorizer but didn't have the time to train one from scratch? Classy Classification is the way to go!"
 authors = ["David Berenstein <david.m.berenstein@gmail.com>"]
 license = "MIT"
@@ -27,19 +27,13 @@ packages = [{include = "classy_classification"}]
 
 
 [tool.poetry.dependencies]
-python = ">=3.8,<3.12"
+python = ">=3.8,<3.13"
 spacy = {extras = ["transformers"], version = "^3.0"}
 sentence-transformers = "^2.0"
 scikit-learn = "^1.0"
-pandas = "^1.4"
-fast-sentence-transformers = { version = "^0.4.1", optional = true }
-optimum = {extras = ["onnxruntime"], version = "^1.8.6"}
-transformers = {extras = ["torch"], version = ">4.20"}
-
-[tool.poetry.extras]
-onnx = ["fast-sentence-transformers", "optimum"]
-
-[tool.poetry.plugins]
+pandas = ">=1,<2"
+transformers = {extras = ["torch"], version = ">4.20,<5"}
+terminado = "<0.18"
 
 [tool.poetry.plugins."spacy_factories"]
 "spacy" = "classy_classification.__init__:make_text_categorizer"

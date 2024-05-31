@@ -3,7 +3,7 @@ import warnings
 from typing import List, Union
 
 import numpy as np
-from spacy import util
+from spacy import __version__, util
 from spacy.tokens import Doc
 
 from .classy_skeleton import ClassyExternal, ClassySkeleton, ClassySkeletonFewShot
@@ -97,8 +97,13 @@ class ClassySpacyInternal(ClassySpacy):
             if doc.has_vector:
                 embeddings.append(doc.vector)
             elif doc.has_extension("trf_data"):
-                print(doc)
-                embeddings.append(doc._.trf_data.model_output.pooler_output[0])
+                # check if version is larger than 3.7.0
+                major, minor, patch = map(int, __version__.split("."))
+                is_greater_than_3_7 = (major > 3) or (major == 3 and minor >= 7)
+                if is_greater_than_3_7:
+                    embeddings.append(doc._.trf_data.all_outputs[0].data[-1])
+                else:
+                    embeddings.append(doc._.trf_data.model_output.pooler_output[0])
             else:
                 warnings.warn(
                     f"None of the words in the text `{str(doc)}` have vectors. Returning zeros.", stacklevel=1
