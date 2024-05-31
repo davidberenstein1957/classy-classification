@@ -28,9 +28,9 @@ packages = [{include = "classy_classification"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.13"
-spacy = {extras = ["transformers"], version = ">=3,<4"}
-sentence-transformers = ">=2,<4"
-scikit-learn = ">1,<2"
+spacy = {extras = ["transformers"], version = "^3.0"}
+sentence-transformers = "^2.0"
+scikit-learn = "^1.0"
 pandas = ">=1,<2"
 transformers = {extras = ["torch"], version = ">4.20,<5"}
 terminado = "<0.18"
