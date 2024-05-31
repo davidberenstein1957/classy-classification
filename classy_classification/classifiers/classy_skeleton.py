@@ -1,23 +1,15 @@
 import collections
-import importlib.util
 from typing import List, Union
 
 import numpy as np
 import pandas as pd
+from sentence_transformers import SentenceTransformer
 from sklearn import preprocessing
 from sklearn.model_selection import GridSearchCV
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.svm import SVC, OneClassSVM
 from spacy.language import Language
 from spacy.tokens import Doc, Span
-
-onnx = importlib.util.find_spec("fast_sentence_transformers") or importlib.util.find_spec("fast-sentence-transformers")
-if onnx is None:
-    from sentence_transformers import SentenceTransformer
-else:
-    from fast_sentence_transformers import (
-        FastSentenceTransformer as SentenceTransformer,
-    )
 
 
 class ClassySkeleton:
@@ -281,17 +273,11 @@ class ClassyExternal:
         if device:
             self.device = device
 
-        if onnx is None:
-            if self.device in ["gpu", "cuda", 0]:
-                self.device = None  # If None, checks if a GPU can be used.
-            else:
-                self.device = "cpu"
-            self.encoder = SentenceTransformer(self.model, device=self.device)
+        if self.device in ["gpu", "cuda", 0]:
+            self.device = None  # If None, checks if a GPU can be used.
         else:
-            if device in ["gpu", "cuda", 0]:
-                self.encoder = SentenceTransformer(self.model, device=self.device, quantize=False)
-            else:
-                self.encoder = SentenceTransformer(self.model, device=self.device, quantize=True)
+            self.device = "cpu"
+        self.encoder = SentenceTransformer(self.model, device=self.device)
 
         if model:  # update if overwritten
             self.set_training_data()

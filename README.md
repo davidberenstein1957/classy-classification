@@ -9,27 +9,9 @@ Have you ever struggled with needing a [Spacy TextCategorizer](https://spacy.io/
 # Install
 ``` pip install classy-classification```
 
-Or, install with faster inference using ONNX.
-
-``` pip install classy-classification[onnx]```
 ## SetFit support
 
 I got a lot of requests for SetFit support, but I decided to create a [separate package](https://github.com/davidberenstein1957/spacy-setfit) for this. Feel free to check it out. ❤️
-## ONNX issues
-
-
-### pickling
-
-ONNX does show some issues when pickling the data.
-### M1
-
-Some [installation issues](https://github.com/onnx/onnx/issues/3129) might occur, which can be fixed by these commands.
-
-```
-brew install cmake
-brew install protobuf
-pip3 install onnx --no-use-pep517
-```
 
 # Quickstart
 ## SpaCy embeddings
@@ -90,7 +72,9 @@ print(nlp("I am looking for kitchen appliances. And I love doing so.").sents[0].
 #
 # [[{"furniture" : 0.21}, {"kitchen": 0.79}]
 ```
+
 ### Define random seed and verbosity
+
 ```python
 
 nlp.add_pipe(
@@ -102,7 +86,9 @@ nlp.add_pipe(
     }
 )
 ```
+
 ### Multi-label classification
+
 Sometimes multiple labels are necessary to fully describe the contents of a text. In that case, we want to make use of the **multi-label** implementation, here the sum of label scores is not limited to 1. Just pass the same training data to multiple keys.
 
 ```python
@@ -143,11 +129,14 @@ print(nlp("I am looking for furniture and kitchen equipment.")._.cats)
 #
 # [{"furniture": 0.92}, {"kitchen": 0.91}]
 ```
+
 ### Outlier detection
+
 Sometimes it is worth to be able to do outlier detection or binary classification. This can either be approached using
 a binary training dataset, however, I have also implemented support for a `OneClassSVM` for [outlier detection using a single label](https://scikit-learn.org/stable/modules/generated/sklearn.svm.OneClassSVM.html). Not that this method does not return probabilities, but that the data is formatted like label-score value pair to ensure uniformity.
 
 Approach 1:
+
 ```python
 import spacy
 
@@ -174,7 +163,9 @@ print(nlp("This text is a random text")._.cats)
 #
 # [{'inlier': 0.2926672385488411, 'outlier': 0.707332761451159}]
 ```
+
 Approach 2:
+
 ```python
 import spacy
 
@@ -198,7 +189,9 @@ print(nlp("This text is a random text")._.cats)
 #
 # [{'furniture': 0, 'not_furniture': 1}]
 ```
+
 ## Sentence-transfomer embeddings
+
 ```python
 import spacy
 
@@ -227,7 +220,9 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 #
 # [{"furniture": 0.21}, {"kitchen": 0.79}]
 ```
+
 ## Hugginface zero-shot classifiers
+
 ```python
 import spacy
 
@@ -250,8 +245,11 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 #
 # [{"furniture": 0.21}, {"kitchen": 0.79}]
 ```
+
 # Credits
+
 ## Inspiration Drawn From
+
 [Huggingface](https://huggingface.co/) does offer some nice models for few/zero-shot classification, but these are not tailored to multi-lingual approaches. Rasa NLU has [a nice approach](https://rasa.com/blog/rasa-nlu-in-depth-part-1-intent-classification/) for this, but its too embedded in their codebase for easy usage outside of Rasa/chatbots. Additionally, it made sense to integrate [sentence-transformers](https://github.com/UKPLab/sentence-transformers) and [Hugginface zero-shot](https://huggingface.co/models?pipeline_tag=zero-shot-classification), instead of default [word embeddings](https://arxiv.org/abs/1301.3781). Finally, I decided to integrate with Spacy, since training a custom [Spacy TextCategorizer](https://spacy.io/api/textcategorizer) seems like a lot of hassle if you want something quick and dirty.
 
 - [Scikit-learn](https://github.com/scikit-learn/scikit-learn)
@@ -260,8 +258,8 @@ print(nlp("I am looking for kitchen appliances.")._.cats)
 - [Spacy](https://github.com/explosion/spaCy)
 
 ## Or buy me a coffee
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/98kf2552674)
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/98kf2552674)
 
 # Standalone usage without spaCy
 
@@ -302,6 +300,7 @@ classifier("I am looking for kitchen appliances.")
 ```
 
 ## Save and load models
+
 ```python
 data = {
     "furniture": ["This text is about chairs.",
