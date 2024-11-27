@@ -32,6 +32,7 @@ spacy = {extras = ["transformers"], version = "^3.0"}
 sentence-transformers = "^2.0"
 scikit-learn = "^1.0"
 pandas = ">=1,<2"
+numpy = "<2"
 transformers = {extras = ["torch"], version = ">4.20,<5"}
 terminado = "<0.18"
 
