@@ -171,7 +171,7 @@ class ClassySpacyExternalZeroShot(ClassySpacy, ClassySkeleton):
             self.pipeline = pipeline(
                 "zero-shot-classification", model=model, device=self.device, top_k=None, accelerator="ort"
             )
-        except ImportError:
+        except Exception:
             from transformers import pipeline
 
             if self.device in ["gpu", "cuda", 0]:
