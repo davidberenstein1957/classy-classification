@@ -30,8 +30,7 @@ jobs:
           python -m ensurepip --upgrade
           python -m pip install --upgrade setuptools
           python -m pip install flake8 pytest pytest-cov
-          python -m pip install poetry
-          python -m pip install poetry-plugin-export
+          python -m pip install "poetry<2.0.0"
           poetry export -f requirements.txt -o requirements.txt --without-hashes
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
           python -m spacy download en_core_web_md
